@@ -100,14 +100,14 @@ const BookingPage = ({ user, logout }) => {
 
     setSubmitting(true);
     try {
-      const [hours, minutes] = selectedTime.split(':');
-      const dateTime = new Date(selectedDate);
-      dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      // Create date string in format YYYY-MM-DDTHH:MM:00Z without timezone conversion
+      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateTimeStr = `${dateStr}T${selectedTime}:00Z`;
 
       await axios.post('/appointments', {
         service_id: selectedService.id,
         hairdresser_id: selectedHairdresser.id,
-        date_time: dateTime.toISOString()
+        date_time: dateTimeStr
       });
 
       toast.success('Appuntamento prenotato con successo!');
