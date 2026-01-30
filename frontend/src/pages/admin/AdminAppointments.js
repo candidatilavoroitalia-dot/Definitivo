@@ -349,17 +349,26 @@ const AdminAppointments = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                           <Button
                             onClick={() => {
                               setActioningId(appointment.id);
                               setActionType('confirm');
                             }}
-                            className="bg-green-600 hover:bg-green-700 text-white rounded-none px-6 py-3"
+                            className="bg-green-600 hover:bg-green-700 text-white rounded-none px-4 py-2"
                             data-testid={`confirm-button-${appointment.id}`}
                           >
-                            <Check className="w-4 h-4 mr-2" />
+                            <Check className="w-4 h-4 mr-1" />
                             Conferma
+                          </Button>
+                          <Button
+                            onClick={() => openRescheduleModal(appointment)}
+                            variant="outline"
+                            className="border-brand-charcoal text-brand-charcoal hover:bg-brand-sand/30 rounded-none px-4 py-2"
+                            data-testid={`reschedule-button-${appointment.id}`}
+                          >
+                            <CalendarClock className="w-4 h-4 mr-1" />
+                            Sposta
                           </Button>
                           <Button
                             onClick={() => {
@@ -367,11 +376,23 @@ const AdminAppointments = () => {
                               setActionType('cancel');
                             }}
                             variant="outline"
-                            className="border-red-600 text-red-600 hover:bg-red-50 rounded-none px-6 py-3"
+                            className="border-orange-500 text-orange-500 hover:bg-orange-50 rounded-none px-4 py-2"
                             data-testid={`cancel-button-${appointment.id}`}
                           >
-                            <X className="w-4 h-4 mr-2" />
-                            Cancella
+                            <X className="w-4 h-4 mr-1" />
+                            Annulla
+                          </Button>
+                          <Button
+                            onClick={() => {
+                              setActioningId(appointment.id);
+                              setActionType('delete');
+                            }}
+                            variant="outline"
+                            className="border-red-600 text-red-600 hover:bg-red-50 rounded-none px-4 py-2"
+                            data-testid={`delete-button-${appointment.id}`}
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Elimina
                           </Button>
                         </div>
                       </div>
