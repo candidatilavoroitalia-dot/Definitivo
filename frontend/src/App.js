@@ -9,6 +9,9 @@ import Dashboard from './pages/Dashboard';
 import BookingPage from './pages/BookingPage';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminAppointments from './pages/admin/AdminAppointments';
+import AdminServices from './pages/admin/AdminServices';
+import AdminHairdressers from './pages/admin/AdminHairdressers';
+import AdminSettings from './pages/admin/AdminSettings';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
