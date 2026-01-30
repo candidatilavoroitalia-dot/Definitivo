@@ -98,9 +98,9 @@ const ManualBooking = () => {
 
     setSubmitting(true);
     try {
-      const dateTime = new Date(formData.date);
-      const [hours, minutes] = formData.time.split(':');
-      dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+      // Create date string in format YYYY-MM-DDTHH:MM:00Z without timezone conversion
+      const dateStr = format(formData.date, 'yyyy-MM-dd');
+      const dateTimeStr = `${dateStr}T${formData.time}:00Z`;
 
       await axios.post('/admin/appointments/manual', {
         client_name: formData.client_name,
@@ -108,7 +108,7 @@ const ManualBooking = () => {
         client_phone: formData.client_phone,
         service_id: formData.service_id,
         hairdresser_id: formData.hairdresser_id,
-        date_time: dateTime.toISOString()
+        date_time: dateTimeStr
       });
 
       toast.success('Appuntamento creato con successo!');
