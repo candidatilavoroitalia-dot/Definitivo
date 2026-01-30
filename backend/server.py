@@ -422,6 +422,61 @@ async def check_availability(request: AvailabilityRequest):
     
     return AvailabilityResponse(date=request.date, available_slots=available_slots)
 
+# Helper function to check slot availability
+async def is_slot_available(hairdresser_id: str, service_id: str, date_time: datetime, exclude_appointment_id: str = None) -> bool:
+    """Check if a time slot is available for booking"""
+    # Get service duration
+    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        return False
+    service_duration = service["duration_minutes"]
+    
+    # Get all appointments for this date and hairdresser
+    start_date = date_time.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_date = start_date + timedelta(days=1)
+    
+    query = {
+        "hairdresser_id": hairdresser_id,
+        "date_time": {
+            "$gte": start_date.isoformat(),
+            "$lt": end_date.isoformat()
+        },
+        "status": {"$ne": "cancelled"}
+    }
+    
+    # Exclude current appointment when rescheduling
+    if exclude_appointment_id:
+        query["id"] = {"$ne": exclude_appointment_id}
+    
+    appointments = await db.appointments.find(query, {"_id": 0}).to_list(1000)
+    
+    # Batch fetch services
+    service_ids = list(set(apt["service_id"] for apt in appointments))
+    services_dict = {}
+    if service_ids:
+        services_list = await db.services.find({"id": {"$in": service_ids}}, {"_id": 0}).to_list(100)
+        services_dict = {s["id"]: s for s in services_list}
+    
+    # Build occupied time ranges
+    slot_start = date_time
+    slot_end = date_time + timedelta(minutes=service_duration)
+    
+    for apt in appointments:
+        apt_time = datetime.fromisoformat(apt["date_time"])
+        if apt_time.tzinfo is None:
+            apt_time = apt_time.replace(tzinfo=timezone.utc)
+        apt_service = services_dict.get(apt["service_id"])
+        apt_duration = apt_service["duration_minutes"] if apt_service else 30
+        
+        apt_start = apt_time
+        apt_end = apt_time + timedelta(minutes=apt_duration)
+        
+        # Check overlap
+        if slot_start < apt_end and slot_end > apt_start:
+            return False
+    
+    return True
+
 # Appointments routes
 @api_router.post("/appointments", response_model=Appointment)
 async def create_appointment(appointment_data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
@@ -431,6 +486,15 @@ async def create_appointment(appointment_data: AppointmentCreate, current_user: 
     
     if appointment_data.date_time <= datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Appointment time must be in the future")
+    
+    # Check if slot is available
+    slot_available = await is_slot_available(
+        appointment_data.hairdresser_id,
+        appointment_data.service_id,
+        appointment_data.date_time
+    )
+    if not slot_available:
+        raise HTTPException(status_code=400, detail="Questo orario non è più disponibile. Seleziona un altro orario.")
     
     # Get user details
     user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
