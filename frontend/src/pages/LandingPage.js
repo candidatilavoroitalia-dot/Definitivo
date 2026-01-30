@@ -282,8 +282,8 @@ const LandingPage = ({ user, logout }) => {
       )}
 
       {/* Download App Section */}
-      {isInstallable && !isInstalled && (
-        <section className="py-24 px-6 md:px-12 bg-gradient-to-br from-brand-sand/30 to-brand-bone">
+      {!isInstalled && (
+        <section className="py-24 px-6 md:px-12 bg-gradient-to-br from-brand-sand/30 to-brand-bone" data-testid="download-section">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -319,15 +319,27 @@ const LandingPage = ({ user, logout }) => {
                     <span>Aggiornamenti automatici</span>
                   </li>
                 </ul>
-                <Button
-                  onClick={handleInstallClick}
-                  size="lg"
-                  className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
-                  data-testid="download-app-section-button"
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Installa Ora
-                </Button>
+                
+                {isInstallable ? (
+                  <Button
+                    onClick={handleInstallClick}
+                    size="lg"
+                    className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+                    data-testid="download-app-section-button"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Installa Ora
+                  </Button>
+                ) : (
+                  <div className="space-y-3 p-4 bg-white border border-brand-sand/30">
+                    <p className="text-sm font-semibold text-brand-charcoal">Come installare:</p>
+                    <ul className="text-sm space-y-2 text-muted-foreground">
+                      <li><strong>Android:</strong> Menu (⋮) → "Aggiungi a schermata Home"</li>
+                      <li><strong>iOS:</strong> Condividi → "Aggiungi a Home"</li>
+                      <li><strong>Desktop:</strong> Icona nella barra indirizzi → Installa</li>
+                    </ul>
+                  </div>
+                )}
               </div>
               <div className="relative">
                 <div className="aspect-[9/16] max-w-xs mx-auto bg-brand-charcoal shadow-2xl overflow-hidden border-8 border-brand-charcoal" style={{ borderRadius: '40px' }}>
