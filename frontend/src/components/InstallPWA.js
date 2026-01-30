@@ -59,8 +59,8 @@ const InstallPWA = () => {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50 animate-in slide-in-from-bottom duration-300">
-      <Card className="p-4 shadow-2xl border-brand-gold/30 bg-white">
+    <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-sm z-50">
+      <Card className="p-4 shadow-2xl border-brand-gold/30 bg-white animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="flex items-start gap-3">
           <div className="flex-shrink-0 w-12 h-12 bg-brand-charcoal rounded flex items-center justify-center">
             <span className="text-2xl">✂️</span>
