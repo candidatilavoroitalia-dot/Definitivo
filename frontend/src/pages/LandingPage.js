@@ -2,8 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import { Calendar, Clock, Users, Check, LogOut, LayoutDashboard, Shield } from 'lucide-react';
+import { Calendar, Clock, Users, Check, LogOut, LayoutDashboard, Shield, Download, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { usePWAInstall } from '../hooks/usePWAInstall';
+import { toast } from 'sonner';
 
 const LandingPage = ({ user, logout }) => {
   const navigate = useNavigate();
