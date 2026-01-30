@@ -86,6 +86,9 @@ function App() {
             element={user && user.is_admin ? <AdminLayout user={user} logout={logout} /> : <Navigate to={user ? "/dashboard" : "/auth"} />}
           >
             <Route index element={<AdminAppointments />} />
+            <Route path="services" element={<AdminServices />} />
+            <Route path="hairdressers" element={<AdminHairdressers />} />
+            <Route path="settings" element={<AdminSettings />} />
           </Route>
         </Routes>
       </BrowserRouter>
