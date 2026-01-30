@@ -288,14 +288,6 @@ const AdminAppointments = () => {
             {groupedAppointments.confirmed.length}
           </div>
         </Card>
-        <Card className="p-6 border-red-300 bg-red-50">
-          <div className="text-sm font-medium tracking-widest uppercase text-red-800 mb-2">
-            Cancellati
-          </div>
-          <div className="text-4xl font-playfair font-bold text-red-800">
-            {groupedAppointments.cancelled.length}
-          </div>
-        </Card>
       </div>
 
       {loading ? (
