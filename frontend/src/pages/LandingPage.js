@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import axios from 'axios';
 import { Calendar, Clock, Users, Check, LogOut, LayoutDashboard, Shield } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
