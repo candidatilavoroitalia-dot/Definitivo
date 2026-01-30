@@ -470,34 +470,6 @@ const AdminAppointments = () => {
             </div>
           )}
 
-          {/* Cancelled Appointments */}
-          {groupedAppointments.cancelled.length > 0 && (
-            <div>
-              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6">
-                Cancellati ({groupedAppointments.cancelled.length})
-              </h2>
-              <div className="space-y-4">
-                {groupedAppointments.cancelled.map((appointment) => (
-                  <Card key={appointment.id} className="p-6 border-red-300 bg-red-50/50 opacity-75">
-                    <div className="flex items-center gap-3 mb-2">
-                      <StatusBadge status={appointment.status} />
-                      <h3 className="text-lg font-playfair font-semibold text-brand-charcoal">
-                        {appointment.service_name}
-                      </h3>
-                    </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
-                      <span>{appointment.user_name}</span>
-                      <span>•</span>
-                      <span>{format(new Date(appointment.date_time), 'd MMM yyyy, HH:mm', { locale: it })}</span>
-                      <span>•</span>
-                      <span>{appointment.hairdresser_name}</span>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Empty State */}
           {appointments.length === 0 && (
             <Card className="p-12 text-center border-brand-sand/30">
