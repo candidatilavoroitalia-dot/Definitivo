@@ -191,15 +191,20 @@ const BookingPage = ({ user, logout }) => {
               <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
                 Scegli il Servizio
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {services.map((service) => (
-                  <Card
+                  <button
                     key={service.id}
+                    type="button"
                     onClick={() => setSelectedService(service)}
-                    className={`p-6 cursor-pointer transition-all duration-300 ${
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setSelectedService(service);
+                    }}
+                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 ${
                       selectedService?.id === service.id
-                        ? 'border-brand-gold border-2 shadow-xl'
-                        : 'border-brand-sand/30 hover:shadow-lg'
+                        ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
+                        : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
                     }`}
                     data-testid={`service-card-${service.id}`}
                   >
@@ -211,7 +216,7 @@ const BookingPage = ({ user, logout }) => {
                       <span className="text-brand-gold font-semibold">€{service.price.toFixed(2)}</span>
                       <span className="text-muted-foreground">{service.duration_minutes} min</span>
                     </div>
-                  </Card>
+                  </button>
                 ))}
               </div>
             </motion.div>
