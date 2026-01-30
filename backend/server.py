@@ -586,6 +586,16 @@ async def get_settings():
             ]
         }
         return Settings(**default_settings)
+    
+    # Ensure hero_image_url exists (for backward compatibility)
+    if "hero_image_url" not in settings:
+        settings["hero_image_url"] = "https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+        # Update database with new field
+        await db.settings.update_one(
+            {"id": "app_settings"},
+            {"$set": {"hero_image_url": settings["hero_image_url"]}}
+        )
+    
     return Settings(**settings)
 
 @api_router.put("/admin/settings", response_model=Settings)
