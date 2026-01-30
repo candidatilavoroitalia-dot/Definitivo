@@ -433,6 +433,10 @@ async def update_appointment(appointment_id: str, update_data: AppointmentUpdate
     
     update_dict = {}
     if update_data.date_time:
+        # Ensure date_time is timezone-aware
+        if update_data.date_time.tzinfo is None:
+            update_data.date_time = update_data.date_time.replace(tzinfo=timezone.utc)
+        
         if update_data.date_time <= datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="Appointment time must be in the future")
         update_dict["date_time"] = update_data.date_time.isoformat()
