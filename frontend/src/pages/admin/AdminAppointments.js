@@ -175,26 +175,6 @@ const AdminAppointments = () => {
     }
   };
 
-  const StatusBadge = ({ status }) => {
-    const colors = {
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-      confirmed: 'bg-green-100 text-green-800 border-green-300',
-      cancelled: 'bg-red-100 text-red-800 border-red-300'
-    };
-
-    const labels = {
-      pending: 'In Attesa',
-      confirmed: 'Confermato',
-      cancelled: 'Cancellato'
-    };
-
-    return (
-      <span className={`px-3 py-1 text-xs font-medium tracking-wide border ${colors[status]}`}>
-        {labels[status]}
-      </span>
-    );
-  };
-
   const groupedAppointments = {
     pending: appointments.filter(apt => apt.status === 'pending'),
     confirmed: appointments.filter(apt => apt.status === 'confirmed'),
