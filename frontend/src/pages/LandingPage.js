@@ -70,6 +70,17 @@ const LandingPage = ({ user, logout }) => {
             parrucco..
           </motion.div>
           <div className="flex gap-4 items-center">
+            {isInstallable && !isInstalled && (
+              <Button
+                onClick={handleInstallClick}
+                variant="outline"
+                className="border-brand-gold text-brand-charcoal hover:bg-brand-gold hover:text-brand-charcoal rounded-none px-6 py-3 text-sm font-medium tracking-wide hidden md:flex items-center transition-all"
+                data-testid="install-app-button"
+              >
+                <Smartphone className="w-4 h-4 mr-2" />
+                Scarica App
+              </Button>
+            )}
             {user ? (
               <>
                 <Button
