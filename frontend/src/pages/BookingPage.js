@@ -16,6 +16,7 @@ const BookingPage = ({ user, logout }) => {
   const [step, setStep] = useState(1);
   const [services, setServices] = useState([]);
   const [hairdressers, setHairdressers] = useState([]);
+  const [timeSlots, setTimeSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
@@ -30,12 +31,18 @@ const BookingPage = ({ user, logout }) => {
 
   const fetchData = async () => {
     try {
-      const [servicesRes, hairdressersRes] = await Promise.all([
+      const [servicesRes, hairdressersRes, settingsRes] = await Promise.all([
         axios.get('/services'),
-        axios.get('/hairdressers')
+        axios.get('/hairdressers'),
+        axios.get('/settings')
       ]);
       setServices(servicesRes.data);
       setHairdressers(hairdressersRes.data);
+      setTimeSlots(settingsRes.data.time_slots || [
+        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+        '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+        '17:00', '17:30', '18:00'
+      ]);
     } catch (error) {
       toast.error('Errore nel caricamento dei dati');
     } finally {
