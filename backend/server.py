@@ -666,9 +666,8 @@ async def get_settings():
             "id": "app_settings",
             "hero_title": "Il Tuo Salone, Sempre Disponibile",
             "hero_subtitle": "",
-            "hero_description": "Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.",
+            "hero_description": "Prenota il tuo appuntamento in pochi secondi. Ricevi notifiche e promemoria. Gestisci tutto dal tuo telefono.",
             "hero_image_url": "https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-            "admin_phone": "",
             "working_days": [1, 2, 3, 4, 5, 6],  # Monday to Saturday
             "opening_time": "09:00",
             "closing_time": "19:00",
