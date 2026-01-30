@@ -534,10 +534,6 @@ async def confirm_appointment(appointment_id: str, current_user: dict = Depends(
     appointment["date_time"] = datetime.fromisoformat(appointment["date_time"])
     appointment["created_at"] = datetime.fromisoformat(appointment["created_at"])
     
-    # Send confirmation message
-    message = f"Il tuo appuntamento del {appointment['date_time'].strftime('%d/%m/%Y alle %H:%M')} è stato confermato!"
-    send_whatsapp_message(appointment["user_phone"], message)
-    
     return Appointment(**appointment)
 
 @api_router.patch("/admin/appointments/{appointment_id}", response_model=Appointment)
