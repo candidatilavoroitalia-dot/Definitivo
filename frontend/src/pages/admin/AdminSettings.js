@@ -15,6 +15,7 @@ const AdminSettings = () => {
     hero_title: '',
     hero_subtitle: '',
     hero_description: '',
+    hero_image_url: '',
     time_slots: []
   });
   const [newSlot, setNewSlot] = useState('');
