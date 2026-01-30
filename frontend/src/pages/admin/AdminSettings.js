@@ -20,6 +20,13 @@ const AdminSettings = () => {
   });
   const [newSlot, setNewSlot] = useState('');
 
+  const suggestedImages = [
+    { url: 'https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', label: 'Salone Moderno' },
+    { url: 'https://images.pexels.com/photos/1319460/pexels-photo-1319460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Forbici Professionali' },
+    { url: 'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Salone Elegante' },
+    { url: 'https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Salone Vintage' },
+  ];
+
   useEffect(() => {
     fetchSettings();
   }, []);
