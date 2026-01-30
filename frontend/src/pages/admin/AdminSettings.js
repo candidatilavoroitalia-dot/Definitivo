@@ -16,7 +16,6 @@ const AdminSettings = () => {
     hero_subtitle: '',
     hero_description: '',
     hero_image_url: '',
-    admin_phone: '',
     working_days: [1, 2, 3, 4, 5, 6],
     opening_time: '09:00',
     closing_time: '19:00',
