@@ -101,6 +101,18 @@ class Service(BaseModel):
     price: float
     description: str
 
+class ServiceCreate(BaseModel):
+    name: str
+    duration_minutes: int
+    price: float
+    description: str
+
+class ServiceUpdate(BaseModel):
+    name: Optional[str] = None
+    duration_minutes: Optional[int] = None
+    price: Optional[float] = None
+    description: Optional[str] = None
+
 class AppointmentCreate(BaseModel):
     hairdresser_id: str
     service_id: str
