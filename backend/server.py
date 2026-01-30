@@ -417,7 +417,7 @@ async def reschedule_appointment(appointment_id: str, new_date_time: datetime, c
 
 # Admin routes
 @api_router.get("/admin/appointments", response_model=List[Appointment])
-async def get_all_appointments(date: Optional[str] = None, current_user: dict = Depends(get_admin_user)):
+async def get_all_appointments(date: Optional[str] = None, status: Optional[str] = None, current_user: dict = Depends(get_admin_user)):
     query = {}
     if date:
         # Filter by date (today)
@@ -429,6 +429,9 @@ async def get_all_appointments(date: Optional[str] = None, current_user: dict = 
                 "$lt": end.isoformat()
             }
         }
+    
+    if status:
+        query["status"] = status
     
     appointments = await db.appointments.find(query, {"_id": 0}).sort("date_time", 1).to_list(1000)
     
