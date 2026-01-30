@@ -228,15 +228,20 @@ const BookingPage = ({ user, logout }) => {
               <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
                 Scegli il Parrucchiere
               </h2>
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-4">
                 {hairdressers.map((hairdresser) => (
-                  <Card
+                  <button
                     key={hairdresser.id}
+                    type="button"
                     onClick={() => setSelectedHairdresser(hairdresser)}
-                    className={`p-6 cursor-pointer transition-all duration-300 ${
+                    onTouchEnd={(e) => {
+                      e.preventDefault();
+                      setSelectedHairdresser(hairdresser);
+                    }}
+                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 ${
                       selectedHairdresser?.id === hairdresser.id
-                        ? 'border-brand-gold border-2 shadow-xl'
-                        : 'border-brand-sand/30 hover:shadow-lg'
+                        ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
+                        : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
                     }`}
                     data-testid={`hairdresser-card-${hairdresser.id}`}
                   >
@@ -246,7 +251,7 @@ const BookingPage = ({ user, logout }) => {
                     <p className="text-sm text-muted-foreground">
                       Specialità: {hairdresser.specialties.join(', ')}
                     </p>
-                  </Card>
+                  </button>
                 ))}
               </div>
             </motion.div>
