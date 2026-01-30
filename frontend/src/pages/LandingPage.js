@@ -70,7 +70,7 @@ const LandingPage = ({ user, logout }) => {
             parrucco..
           </motion.div>
           <div className="flex gap-4 items-center">
-            {isInstallable && !isInstalled && (
+            {!isInstalled && (
               <Button
                 onClick={handleInstallClick}
                 variant="outline"
