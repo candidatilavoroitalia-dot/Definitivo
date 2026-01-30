@@ -350,6 +350,10 @@ async def cancel_appointment(appointment_id: str, current_user: dict = Depends(g
 
 @api_router.patch("/appointments/{appointment_id}/reschedule", response_model=Appointment)
 async def reschedule_appointment(appointment_id: str, new_date_time: datetime, current_user: dict = Depends(get_current_user)):
+    # Ensure new_date_time is timezone-aware
+    if new_date_time.tzinfo is None:
+        new_date_time = new_date_time.replace(tzinfo=timezone.utc)
+    
     if new_date_time <= datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Appointment time must be in the future")
     
