@@ -503,6 +503,115 @@ async def delete_appointment(appointment_id: str, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Appointment not found")
     return {"message": "Appointment deleted"}
 
+# Admin Services Management
+@api_router.post("/admin/services", response_model=Service)
+async def create_service(service_data: ServiceCreate, current_user: dict = Depends(get_admin_user)):
+    service_id = str(uuid.uuid4())
+    service_doc = {
+        "id": service_id,
+        **service_data.model_dump()
+    }
+    await db.services.insert_one(service_doc)
+    return Service(**service_doc)
+
+@api_router.put("/admin/services/{service_id}", response_model=Service)
+async def update_service(service_id: str, update_data: ServiceUpdate, current_user: dict = Depends(get_admin_user)):
+    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    if update_dict:
+        await db.services.update_one({"id": service_id}, {"$set": update_dict})
+        service.update(update_dict)
+    
+    return Service(**service)
+
+@api_router.delete("/admin/services/{service_id}")
+async def delete_service(service_id: str, current_user: dict = Depends(get_admin_user)):
+    result = await db.services.delete_one({"id": service_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Service not found")
+    return {"message": "Service deleted"}
+
+# Admin Hairdressers Management
+@api_router.post("/admin/hairdressers", response_model=Hairdresser)
+async def create_hairdresser(hairdresser_data: HairdresserCreate, current_user: dict = Depends(get_admin_user)):
+    hairdresser_id = str(uuid.uuid4())
+    hairdresser_doc = {
+        "id": hairdresser_id,
+        **hairdresser_data.model_dump()
+    }
+    await db.hairdressers.insert_one(hairdresser_doc)
+    return Hairdresser(**hairdresser_doc)
+
+@api_router.put("/admin/hairdressers/{hairdresser_id}", response_model=Hairdresser)
+async def update_hairdresser(hairdresser_id: str, update_data: HairdresserUpdate, current_user: dict = Depends(get_admin_user)):
+    hairdresser = await db.hairdressers.find_one({"id": hairdresser_id}, {"_id": 0})
+    if not hairdresser:
+        raise HTTPException(status_code=404, detail="Hairdresser not found")
+    
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    if update_dict:
+        await db.hairdressers.update_one({"id": hairdresser_id}, {"$set": update_dict})
+        hairdresser.update(update_dict)
+    
+    return Hairdresser(**hairdresser)
+
+@api_router.delete("/admin/hairdressers/{hairdresser_id}")
+async def delete_hairdresser(hairdresser_id: str, current_user: dict = Depends(get_admin_user)):
+    result = await db.hairdressers.delete_one({"id": hairdresser_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Hairdresser not found")
+    return {"message": "Hairdresser deleted"}
+
+# Admin Settings Management
+@api_router.get("/settings", response_model=Settings)
+async def get_settings():
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if not settings:
+        # Return default settings
+        default_settings = {
+            "id": "app_settings",
+            "hero_title": "Il Tuo Salone, Sempre Disponibile",
+            "hero_subtitle": "",
+            "hero_description": "Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.",
+            "time_slots": [
+                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+                "17:00", "17:30", "18:00"
+            ]
+        }
+        return Settings(**default_settings)
+    return Settings(**settings)
+
+@api_router.put("/admin/settings", response_model=Settings)
+async def update_settings(update_data: SettingsUpdate, current_user: dict = Depends(get_admin_user)):
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    
+    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
+    
+    if not settings:
+        # Create new settings
+        settings_doc = {
+            "id": "app_settings",
+            "hero_title": update_data.hero_title or "Il Tuo Salone, Sempre Disponibile",
+            "hero_subtitle": update_data.hero_subtitle or "",
+            "hero_description": update_data.hero_description or "Prenota il tuo appuntamento in pochi secondi.",
+            "time_slots": update_data.time_slots or [
+                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+                "17:00", "17:30", "18:00"
+            ]
+        }
+        await db.settings.insert_one(settings_doc)
+        return Settings(**settings_doc)
+    else:
+        if update_dict:
+            await db.settings.update_one({"id": "app_settings"}, {"$set": update_dict})
+            settings.update(update_dict)
+        return Settings(**settings)
+
 # Seed data endpoint (for development)
 @api_router.post("/seed")
 async def seed_data():
