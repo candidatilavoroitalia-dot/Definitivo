@@ -112,12 +112,12 @@ const LandingPage = ({ user, logout }) => {
               className="md:col-span-7 space-y-8"
             >
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-none font-playfair text-brand-charcoal" data-testid="hero-title">
-                Il Tuo Salone,
+                {settings?.hero_title?.split(',')[0] || 'Il Tuo Salone,'}
                 <br />
-                <span className="text-brand-gold">Sempre Disponibile</span>
+                <span className="text-brand-gold">{settings?.hero_title?.split(',')[1]?.trim() || 'Sempre Disponibile'}</span>
               </h1>
               <p className="text-lg leading-relaxed text-muted-foreground max-w-xl">
-                Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.
+                {settings?.hero_description || 'Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.'}
               </p>
               {!user && (
                 <Button
