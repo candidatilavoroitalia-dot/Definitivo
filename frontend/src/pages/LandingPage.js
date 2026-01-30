@@ -175,6 +175,18 @@ const LandingPage = ({ user, logout }) => {
                     Scarica App
                   </Button>
                 )}
+                {!isInstallable && !isInstalled && (
+                  <Button
+                    onClick={handleInstallClick}
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-brand-gold text-brand-charcoal hover:bg-brand-gold hover:text-brand-charcoal rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+                    data-testid="install-app-hero-button"
+                  >
+                    <Smartphone className="w-5 h-5 mr-2" />
+                    Info App Mobile
+                  </Button>
+                )}
               </div>
             </motion.div>
             <motion.div
