@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { Calendar, Clock, User, Check, X, Filter } from 'lucide-react';
+import { Calendar, Clock, User, Check, X, Trash2, Edit, CalendarClock } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import {
   AlertDialog,
@@ -16,6 +18,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '../../components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../../components/ui/dialog';
 import { format } from 'date-fns';
 import { it } from 'date-fns/locale';
 
@@ -27,6 +37,13 @@ const AdminAppointments = () => {
   const [actionType, setActionType] = useState(null);
   const [dateFilter, setDateFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Reschedule modal state
+  const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [rescheduleAppointment, setRescheduleAppointment] = useState(null);
+  const [newDate, setNewDate] = useState('');
+  const [newTime, setNewTime] = useState('');
+  const [rescheduling, setRescheduling] = useState(false);
 
   useEffect(() => {
     fetchAppointments();
