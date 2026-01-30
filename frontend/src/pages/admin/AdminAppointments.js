@@ -21,6 +21,7 @@ import { it } from 'date-fns/locale';
 
 const AdminAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [todayAppointments, setTodayAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState(null);
   const [actionType, setActionType] = useState(null);
@@ -29,7 +30,18 @@ const AdminAppointments = () => {
 
   useEffect(() => {
     fetchAppointments();
+    fetchTodayAppointments();
   }, [dateFilter, statusFilter]);
+
+  const fetchTodayAppointments = async () => {
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const response = await axios.get(`/admin/appointments?date=${today}`);
+      setTodayAppointments(response.data);
+    } catch (error) {
+      console.error('Error fetching today appointments');
+    }
+  };
 
   const fetchAppointments = async () => {
     try {
