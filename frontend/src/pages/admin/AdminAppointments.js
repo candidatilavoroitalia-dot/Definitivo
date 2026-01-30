@@ -238,31 +238,29 @@ const AdminAppointments = () => {
           <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
             Periodo
           </label>
-          <Select value={dateFilter} onValueChange={setDateFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tutti</SelectItem>
-              <SelectItem value="today">Solo Oggi</SelectItem>
-            </SelectContent>
-          </Select>
+          <select 
+            value={dateFilter} 
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="w-full h-10 px-3 py-2 text-sm border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          >
+            <option value="all">Tutti</option>
+            <option value="today">Solo Oggi</option>
+          </select>
         </div>
         <div className="flex-1">
           <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
             Stato
           </label>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Tutti</SelectItem>
-              <SelectItem value="pending">In Attesa</SelectItem>
-              <SelectItem value="confirmed">Confermati</SelectItem>
-              <SelectItem value="cancelled">Cancellati</SelectItem>
-            </SelectContent>
-          </Select>
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full h-10 px-3 py-2 text-sm border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          >
+            <option value="all">Tutti</option>
+            <option value="pending">In Attesa</option>
+            <option value="confirmed">Confermati</option>
+            <option value="cancelled">Cancellati</option>
+          </select>
         </div>
       </div>
 
