@@ -42,7 +42,6 @@ function App() {
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    toast.success('Benvenuto!');
   };
 
   const logout = () => {
