@@ -172,6 +172,68 @@ const AdminSettings = () => {
           </div>
         </Card>
 
+        {/* Working Days and Hours Settings */}
+        <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Giorni e Orari Lavorativi</h3>
+          
+          <div className="space-y-6">
+            {/* Working Days */}
+            <div>
+              <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
+                Giorni Lavorativi
+              </label>
+              <div className="grid grid-cols-7 gap-2">
+                {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => {
+                      const newDays = formData.working_days.includes(index)
+                        ? formData.working_days.filter(d => d !== index)
+                        : [...formData.working_days, index].sort((a, b) => a - b);
+                      setFormData({ ...formData, working_days: newDays });
+                    }}
+                    className={`py-3 text-sm font-medium transition-all ${
+                      formData.working_days.includes(index)
+                        ? 'bg-brand-charcoal text-white'
+                        : 'bg-brand-sand/30 text-brand-charcoal hover:bg-brand-sand'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                I clienti potranno prenotare solo nei giorni selezionati
+              </p>
+            </div>
+
+            {/* Working Hours */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
+                  Apertura
+                </label>
+                <Input
+                  type="time"
+                  value={formData.opening_time}
+                  onChange={(e) => setFormData({ ...formData, opening_time: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
+                  Chiusura
+                </label>
+                <Input
+                  type="time"
+                  value={formData.closing_time}
+                  onChange={(e) => setFormData({ ...formData, closing_time: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Time Slots Settings */}
         <Card className="p-8 border-brand-sand/30">
           <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Orari Disponibili</h3>
