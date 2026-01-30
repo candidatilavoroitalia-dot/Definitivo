@@ -47,7 +47,7 @@ const LandingPage = ({ user, logout }) => {
     },
     {
       icon: Clock,
-      title: 'Promemoria WhatsApp',
+      title: 'Promemoria Automatici',
       description: 'Ricevi notifiche prima del tuo appuntamento'
     },
     {
