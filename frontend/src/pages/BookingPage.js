@@ -317,27 +317,36 @@ const BookingPage = ({ user, logout }) => {
                           const isAvailable = availableSlots.includes(time);
                           const isSelected = selectedTime === time;
                           
-                          return (
-                            <Button
-                              key={time}
-                              onClick={() => isAvailable && setSelectedTime(time)}
-                              variant="outline"
-                              disabled={!isAvailable}
-                              className={`rounded-none transition-all relative ${
-                                isSelected
-                                  ? 'bg-brand-charcoal text-white border-brand-charcoal'
-                                  : isAvailable
-                                    ? 'border-brand-sand hover:border-brand-charcoal hover:bg-brand-sand/20'
-                                    : 'border-red-200 bg-red-50 text-red-300 cursor-not-allowed line-through'
-                              }`}
-                              data-testid={`time-slot-${time}`}
-                            >
-                              {time}
-                              {!isAvailable && (
-                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full" />
-                              )}
-                            </Button>
-                          );
+                          if (isAvailable) {
+                            return (
+                              <Button
+                                key={time}
+                                onClick={() => setSelectedTime(time)}
+                                variant="outline"
+                                className={`rounded-none transition-all ${
+                                  isSelected
+                                    ? 'bg-brand-charcoal text-white border-brand-charcoal'
+                                    : 'border-brand-sand hover:border-brand-charcoal hover:bg-brand-sand/20'
+                                }`}
+                                data-testid={`time-slot-${time}`}
+                              >
+                                {time}
+                              </Button>
+                            );
+                          } else {
+                            // Slot occupato - usa div invece di Button per evitare conflitti stile
+                            return (
+                              <div
+                                key={time}
+                                className="relative inline-flex items-center justify-center h-9 px-4 py-2 text-sm font-medium rounded-none border border-red-300 bg-red-50 text-red-400 cursor-not-allowed select-none"
+                                style={{ textDecoration: 'line-through' }}
+                                data-testid={`time-slot-${time}-occupied`}
+                              >
+                                {time}
+                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
+                              </div>
+                            );
+                          }
                         })}
                       </div>
                       <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
@@ -346,8 +355,8 @@ const BookingPage = ({ user, logout }) => {
                           <span>Disponibile</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-red-50 border border-red-200 rounded-sm relative">
-                            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-400 rounded-full" />
+                          <div className="w-4 h-4 bg-red-50 border border-red-300 rounded-sm relative">
+                            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
                           </div>
                           <span>Occupato</span>
                         </div>
