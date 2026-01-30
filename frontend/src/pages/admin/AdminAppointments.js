@@ -529,32 +529,98 @@ const AdminAppointments = () => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {actionType === 'confirm' ? 'Conferma Appuntamento' : 'Cancella Appuntamento'}
+              {actionType === 'confirm' && 'Conferma Appuntamento'}
+              {actionType === 'cancel' && 'Annulla Appuntamento'}
+              {actionType === 'delete' && 'Elimina Appuntamento'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {actionType === 'confirm'
-                ? 'Il cliente riceverà una notifica di conferma su WhatsApp.'
-                : 'Il cliente riceverà una notifica di cancellazione su WhatsApp.'}
+              {actionType === 'confirm' && 'Il cliente riceverà una notifica di conferma su WhatsApp.'}
+              {actionType === 'cancel' && 'L\'appuntamento verrà segnato come annullato. Il cliente riceverà una notifica.'}
+              {actionType === 'delete' && 'L\'appuntamento verrà eliminato definitivamente dal sistema. Questa azione non può essere annullata.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel data-testid="dialog-cancel">Annulla</AlertDialogCancel>
+            <AlertDialogCancel data-testid="dialog-cancel">Indietro</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (actionType === 'confirm') {
                   handleConfirm(actioningId);
-                } else {
+                } else if (actionType === 'cancel') {
                   handleCancel(actioningId);
+                } else if (actionType === 'delete') {
+                  handleDelete(actioningId);
                 }
               }}
-              className={actionType === 'confirm' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}
+              className={
+                actionType === 'confirm' ? 'bg-green-600 hover:bg-green-700' : 
+                actionType === 'cancel' ? 'bg-orange-500 hover:bg-orange-600' :
+                'bg-red-600 hover:bg-red-700'
+              }
               data-testid="dialog-confirm"
             >
-              {actionType === 'confirm' ? 'Conferma' : 'Cancella'}
+              {actionType === 'confirm' && 'Conferma'}
+              {actionType === 'cancel' && 'Annulla Appuntamento'}
+              {actionType === 'delete' && 'Elimina Definitivamente'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Reschedule Modal */}
+      <Dialog open={rescheduleModalOpen} onOpenChange={setRescheduleModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sposta Appuntamento</DialogTitle>
+            <DialogDescription>
+              {rescheduleAppointment && (
+                <>
+                  Cliente: <strong>{rescheduleAppointment.user_name}</strong> - {rescheduleAppointment.service_name}
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Nuova Data</Label>
+              <Input
+                type="date"
+                value={newDate}
+                onChange={(e) => setNewDate(e.target.value)}
+                min={format(new Date(), 'yyyy-MM-dd')}
+                className="w-full"
+                data-testid="reschedule-date"
+              />
+            </div>
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Nuovo Orario</Label>
+              <Input
+                type="time"
+                value={newTime}
+                onChange={(e) => setNewTime(e.target.value)}
+                className="w-full"
+                data-testid="reschedule-time"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRescheduleModalOpen(false)}
+              className="rounded-none"
+            >
+              Annulla
+            </Button>
+            <Button
+              onClick={handleReschedule}
+              disabled={rescheduling || !newDate || !newTime}
+              className="bg-brand-charcoal hover:bg-black text-white rounded-none"
+              data-testid="reschedule-confirm"
+            >
+              {rescheduling ? 'Spostamento...' : 'Conferma Spostamento'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
