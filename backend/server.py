@@ -110,6 +110,9 @@ class Settings(BaseModel):
     hero_image_url: str
     time_slots: List[str]
     admin_phone: str
+    working_days: List[int]  # 0=Sunday, 1=Monday, etc.
+    opening_time: str  # "09:00"
+    closing_time: str  # "19:00"
 
 class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
@@ -118,6 +121,18 @@ class SettingsUpdate(BaseModel):
     hero_image_url: Optional[str] = None
     time_slots: Optional[List[str]] = None
     admin_phone: Optional[str] = None
+    working_days: Optional[List[int]] = None
+    opening_time: Optional[str] = None
+    closing_time: Optional[str] = None
+
+class AvailabilityRequest(BaseModel):
+    date: str  # YYYY-MM-DD
+    service_id: str
+    hairdresser_id: str
+
+class AvailabilityResponse(BaseModel):
+    date: str
+    available_slots: List[str]
 
 class Service(BaseModel):
     model_config = ConfigDict(extra="ignore")
