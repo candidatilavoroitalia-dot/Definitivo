@@ -7,7 +7,8 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import BookingPage from './pages/BookingPage';
-import AdminDashboard from './pages/AdminDashboard';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminAppointments from './pages/admin/AdminAppointments';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
