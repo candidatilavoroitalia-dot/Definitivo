@@ -1,0 +1,106 @@
+{
+  "project_name": "parrucco..",
+  "design_philosophy": {
+    "theme": "Warm Luxury",
+    "tone": "Modern, Elegant, Pampering, Organized",
+    "description": "A sophisticated booking experience that feels like a high-end magazine. High contrast, warm neutrals, and elegant serif typography. Avoids the clinical 'medical' look of standard booking apps."
+  },
+  "typography": {
+    "font_family": {
+      "heading": "Playfair Display, serif",
+      "body": "Manrope, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-5xl md:text-7xl font-bold tracking-tight leading-none",
+      "h2": "text-4xl md:text-5xl font-semibold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-medium",
+      "body_lg": "text-lg leading-relaxed",
+      "body_base": "text-base leading-relaxed text-muted-foreground",
+      "caption": "text-sm font-medium tracking-widest uppercase"
+    },
+    "imports": [
+      "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+    ]
+  },
+  "colors": {
+    "palette": {
+      "primary": "#1A1A1A",
+      "secondary": "#D4AF37",
+      "background": "#F9F9F7",
+      "surface": "#FFFFFF",
+      "muted": "#F2F0EB",
+      "text_main": "#1A1A1A",
+      "text_muted": "#666666",
+      "accent_warm": "#E6D5C3",
+      "success": "#2D6A4F",
+      "error": "#B91C1C"
+    },
+    "tailwind_config_extension": {
+      "colors": {
+        "brand": {
+          "gold": "#D4AF37",
+          "gold-light": "#EEDC9A",
+          "charcoal": "#1A1A1A",
+          "bone": "#F9F9F7",
+          "sand": "#E6D5C3"
+        }
+      }
+    }
+  },
+  "layout_strategies": {
+    "spacing": {
+      "container_padding": "p-6 md:p-12 lg:p-24",
+      "section_gap": "gap-12 md:gap-24",
+      "card_padding": "p-8"
+    },
+    "grids": {
+      "landing_hero": "grid grid-cols-1 md:grid-cols-12 gap-8",
+      "services_list": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8",
+      "admin_dashboard": "grid grid-cols-1 md:grid-cols-4 gap-6",
+      "booking_wizard": "max-w-xl mx-auto flex flex-col gap-8"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]",
+      "secondary": "border border-brand-charcoal text-brand-charcoal hover:bg-brand-charcoal hover:text-white rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all",
+      "ghost": "text-brand-charcoal hover:text-brand-gold font-medium tracking-wide"
+    },
+    "cards": {
+      "service_card": "bg-white border border-brand-sand/30 p-8 hover:shadow-xl hover:shadow-brand-sand/20 transition-all duration-500 group cursor-pointer",
+      "booking_summary": "bg-brand-bone border border-brand-sand p-6"
+    },
+    "inputs": {
+      "default": "bg-transparent border-b border-brand-charcoal/20 focus:border-brand-charcoal rounded-none px-0 py-4 text-lg focus:ring-0 placeholder:text-muted-foreground/50 transition-colors"
+    },
+    "navigation": {
+      "header": "fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-brand-sand/20",
+      "mobile_nav": "sheet-content bg-brand-bone text-brand-charcoal"
+    }
+  },
+  "image_urls": {
+    "hero_bg": "https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "service_cut": "https://images.unsplash.com/photo-1662124778157-235dd9f10a44?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "service_barber": "https://images.unsplash.com/photo-1520338661084-680395057c93?crop=entropy&cs=srgb&fm=jpg&q=85",
+    "texture_noise": "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+CjxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIGZpbGw9IiNjY2MiLz4KPC9zdmc+')",
+    "logo_placeholder": "https://placehold.co/200x80/1A1A1A/FFFFFF?text=parrucco..&font=playfair-display"
+  },
+  "motion": {
+    "page_transition": "initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.5, ease: 'easeOut' }}",
+    "hover_lift": "hover:-translate-y-1 hover:shadow-lg transition-transform duration-300",
+    "stagger_children": "variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.1 } } }}"
+  },
+  "universal_guidelines": [
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Do not use generic 'Inter' font for headings. Use Playfair Display.",
+    "Do not use gradients for backgrounds. Use solid colors or subtle grain textures.",
+    "Ensure all interactive elements have data-testid attributes.",
+    "Use Lenis for smooth scrolling on marketing pages.",
+    "Use Sonner for toast notifications.",
+    "Forms should feel like a conversation, not an interrogation. Use step-by-step wizards.",
+    "Dark colors look good when used independently. Avoid dark gradients.",
+    "Never use AI assistant emojis."
+  ],
+  "instructions_to_main_agent": "1. Install 'lucide-react' and 'framer-motion' immediately.\n2. Add the font imports to index.css.\n3. Configure tailwind.config.js with the brand colors.\n4. Build the Layout.jsx with the sticky header and Lenis scroll.\n5. Implement the Booking Wizard with 'framer-motion' for transitions between steps."
+}
