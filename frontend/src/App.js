@@ -79,7 +79,7 @@ function App() {
           />
           <Route
             path="/admin"
-            element={user && user.is_admin ? <AdminDashboard user={user} logout={logout} /> : <Navigate to="/auth" />}
+            element={user && user.is_admin ? <AdminDashboard user={user} logout={logout} /> : <Navigate to={user ? "/dashboard" : "/auth"} />}
           />
         </Routes>
       </BrowserRouter>
