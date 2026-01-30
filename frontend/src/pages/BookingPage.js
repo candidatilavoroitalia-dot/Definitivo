@@ -285,7 +285,7 @@ const BookingPage = ({ user, logout }) => {
                         mode="single"
                         selected={selectedDate}
                         onSelect={setSelectedDate}
-                        disabled={(date) => date < new Date() || date < new Date().setHours(0, 0, 0, 0)}
+                        disabled={isDateDisabled}
                         initialFocus
                         locale={it}
                         data-testid="calendar"
