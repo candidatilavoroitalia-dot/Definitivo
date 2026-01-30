@@ -349,6 +349,72 @@ async def get_hairdressers():
     hairdressers = await db.hairdressers.find({}, {"_id": 0}).to_list(100)
     return hairdressers
 
+# Availability check
+@api_router.post("/availability", response_model=AvailabilityResponse)
+async def check_availability(request: AvailabilityRequest):
+    # Get settings for time slots
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if not settings:
+        time_slots = [
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+            "17:00", "17:30", "18:00"
+        ]
+    else:
+        time_slots = settings.get("time_slots", [])
+    
+    # Get service to know duration
+    service = await db.services.find_one({"id": request.service_id}, {"_id": 0})
+    if not service:
+        raise HTTPException(status_code=404, detail="Service not found")
+    
+    service_duration = service["duration_minutes"]
+    
+    # Get all appointments for this date and hairdresser
+    start_date = datetime.fromisoformat(request.date).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc)
+    end_date = start_date + timedelta(days=1)
+    
+    appointments = await db.appointments.find({
+        "hairdresser_id": request.hairdresser_id,
+        "date_time": {
+            "$gte": start_date.isoformat(),
+            "$lt": end_date.isoformat()
+        },
+        "status": {"$ne": "cancelled"}
+    }, {"_id": 0}).to_list(1000)
+    
+    # Build occupied time ranges
+    occupied_ranges = []
+    for apt in appointments:
+        apt_time = datetime.fromisoformat(apt["date_time"])
+        # Get service duration for this appointment
+        apt_service = await db.services.find_one({"id": apt["service_id"]}, {"_id": 0})
+        apt_duration = apt_service["duration_minutes"] if apt_service else 30
+        
+        start_time = apt_time
+        end_time = apt_time + timedelta(minutes=apt_duration)
+        occupied_ranges.append((start_time, end_time))
+    
+    # Check which slots are available
+    available_slots = []
+    for slot in time_slots:
+        hours, minutes = map(int, slot.split(':'))
+        slot_datetime = start_date.replace(hour=hours, minute=minutes)
+        slot_end = slot_datetime + timedelta(minutes=service_duration)
+        
+        # Check if slot overlaps with any occupied range
+        is_available = True
+        for occ_start, occ_end in occupied_ranges:
+            # Check overlap: slot starts before occupied ends AND slot ends after occupied starts
+            if slot_datetime < occ_end and slot_end > occ_start:
+                is_available = False
+                break
+        
+        if is_available:
+            available_slots.append(slot)
+    
+    return AvailabilityResponse(date=request.date, available_slots=available_slots)
+
 # Appointments routes
 @api_router.post("/appointments", response_model=Appointment)
 async def create_appointment(appointment_data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
