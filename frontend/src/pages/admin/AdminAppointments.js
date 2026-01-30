@@ -494,8 +494,8 @@ const AdminAppointments = () => {
               {actionType === 'delete' && 'Elimina Appuntamento'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {actionType === 'confirm' && 'Il cliente riceverà una notifica di conferma su WhatsApp.'}
-              {actionType === 'cancel' && 'L\'appuntamento verrà segnato come annullato. Il cliente riceverà una notifica.'}
+              {actionType === 'confirm' && 'L\'appuntamento verrà confermato.'}
+              {actionType === 'cancel' && 'L\'appuntamento verrà annullato.'}
               {actionType === 'delete' && 'L\'appuntamento verrà eliminato definitivamente dal sistema. Questa azione non può essere annullata.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
