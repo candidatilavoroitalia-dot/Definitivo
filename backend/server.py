@@ -769,6 +769,9 @@ async def update_settings(update_data: SettingsUpdate, current_user: dict = Depe
             "hero_description": update_data.hero_description or "Prenota il tuo appuntamento in pochi secondi.",
             "hero_image_url": update_data.hero_image_url or "https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
             "admin_phone": update_data.admin_phone or "",
+            "working_days": update_data.working_days or [1, 2, 3, 4, 5, 6],
+            "opening_time": update_data.opening_time or "09:00",
+            "closing_time": update_data.closing_time or "19:00",
             "time_slots": update_data.time_slots or [
                 "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
                 "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
