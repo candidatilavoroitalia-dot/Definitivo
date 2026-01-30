@@ -6,8 +6,16 @@ import { Card } from './ui/card';
 const InstallPWA = () => {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showInstallBanner, setShowInstallBanner] = useState(false);
+  const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
+    // Check PWA support
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    setIsSupported(true);
+
     // Check if already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       return;
@@ -19,18 +27,27 @@ const InstallPWA = () => {
       return;
     }
 
+    let mounted = true;
+
     const handler = (e) => {
       e.preventDefault();
-      setDeferredPrompt(e);
-      // Show banner after 3 seconds
-      setTimeout(() => {
-        setShowInstallBanner(true);
-      }, 3000);
+      if (mounted) {
+        setDeferredPrompt(e);
+        // Show banner after 3 seconds
+        setTimeout(() => {
+          if (mounted) {
+            setShowInstallBanner(true);
+          }
+        }, 3000);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    return () => {
+      mounted = false;
+      window.removeEventListener('beforeinstallprompt', handler);
+    };
   }, []);
 
   const handleInstall = async () => {
