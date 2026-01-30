@@ -676,6 +676,17 @@ async def update_appointment(appointment_id: str, update_data: AppointmentUpdate
         
         if update_data.date_time <= datetime.now(timezone.utc):
             raise HTTPException(status_code=400, detail="Appointment time must be in the future")
+        
+        # Check if new slot is available (excluding current appointment)
+        slot_available = await is_slot_available(
+            appointment["hairdresser_id"],
+            appointment["service_id"],
+            update_data.date_time,
+            exclude_appointment_id=appointment_id
+        )
+        if not slot_available:
+            raise HTTPException(status_code=400, detail="Questo orario non è disponibile. Seleziona un altro orario.")
+        
         update_dict["date_time"] = update_data.date_time.isoformat()
         appointment["date_time"] = update_data.date_time
     
