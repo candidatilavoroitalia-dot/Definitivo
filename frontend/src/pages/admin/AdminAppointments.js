@@ -258,13 +258,12 @@ const AdminAppointments = () => {
             <option value="all">Tutti</option>
             <option value="pending">In Attesa</option>
             <option value="confirmed">Confermati</option>
-            <option value="cancelled">Cancellati</option>
           </select>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6" data-testid="stats-section">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" data-testid="stats-section">
         <Card className="p-6 border-brand-sand/30">
           <div className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-2">
             Totale
