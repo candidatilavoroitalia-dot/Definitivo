@@ -643,6 +643,14 @@ async def get_settings():
             {"$set": {"hero_image_url": settings["hero_image_url"]}}
         )
     
+    # Ensure admin_phone exists (for backward compatibility)
+    if "admin_phone" not in settings:
+        settings["admin_phone"] = ""
+        await db.settings.update_one(
+            {"id": "app_settings"},
+            {"$set": {"admin_phone": ""}}
+        )
+    
     return Settings(**settings)
 
 @api_router.put("/admin/settings", response_model=Settings)
