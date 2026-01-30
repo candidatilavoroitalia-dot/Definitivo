@@ -376,10 +376,16 @@ async def create_appointment(appointment_data: AppointmentCreate, current_user: 
     
     await db.appointments.insert_one(appointment_doc)
     
-    # Schedule WhatsApp reminder
+    # Schedule WhatsApp reminder (1 hour before)
     appointment_for_reminder = appointment_doc.copy()
     appointment_for_reminder["date_time"] = appointment_data.date_time
     schedule_appointment_reminder(appointment_for_reminder)
+    
+    # Send immediate confirmation to client
+    await send_appointment_confirmation(appointment_for_reminder)
+    
+    # Notify admin about new appointment
+    await notify_admin_new_appointment(appointment_for_reminder)
     
     # Convert ISO strings back to datetime for response
     appointment_doc["date_time"] = appointment_data.date_time
