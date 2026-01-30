@@ -110,7 +110,7 @@ const BookingPage = ({ user, logout }) => {
         date_time: dateTime.toISOString()
       });
 
-      toast.success('Appuntamento prenotato! Riceverai un promemoria su WhatsApp.');
+      toast.success('Appuntamento prenotato con successo!');
       navigate('/dashboard');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Errore durante la prenotazione');
