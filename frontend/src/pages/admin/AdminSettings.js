@@ -96,6 +96,29 @@ const AdminSettings = () => {
                 rows={3}
               />
             </div>
+            <div>
+              <Label className="text-sm font-medium tracking-widest uppercase mb-2">URL Immagine Hero</Label>
+              <Input 
+                type="url"
+                value={formData.hero_image_url} 
+                onChange={(e) => setFormData({ ...formData, hero_image_url: e.target.value })}
+                placeholder="https://images.pexels.com/photos/..."
+                className="mb-3"
+              />
+              {formData.hero_image_url && (
+                <div className="mt-3 border border-brand-sand/30 p-4">
+                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Anteprima:</p>
+                  <img 
+                    src={formData.hero_image_url} 
+                    alt="Hero preview" 
+                    className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      e.target.src = 'https://placehold.co/600x400/F9F9F7/1A1A1A?text=Immagine+non+disponibile';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </Card>
 
