@@ -93,6 +93,7 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
+      <InstallPWA />
       <Toaster position="top-center" richColors />
     </>
   );
