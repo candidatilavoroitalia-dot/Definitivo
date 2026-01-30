@@ -465,10 +465,6 @@ async def cancel_appointment(appointment_id: str, current_user: dict = Depends(g
     appointment["date_time"] = datetime.fromisoformat(appointment["date_time"])
     appointment["created_at"] = datetime.fromisoformat(appointment["created_at"])
     
-    # Send cancellation message
-    message = f"Il tuo appuntamento del {appointment['date_time'].strftime('%d/%m/%Y alle %H:%M')} è stato cancellato."
-    send_whatsapp_message(appointment["user_phone"], message)
-    
     return Appointment(**appointment)
 
 @api_router.patch("/appointments/{appointment_id}/reschedule", response_model=Appointment)
@@ -494,13 +490,6 @@ async def reschedule_appointment(appointment_id: str, new_date_time: datetime, c
     
     appointment["date_time"] = new_date_time
     appointment["created_at"] = datetime.fromisoformat(appointment["created_at"])
-    
-    # Reschedule reminder
-    schedule_appointment_reminder(appointment)
-    
-    # Send confirmation message
-    message = f"Il tuo appuntamento è stato riprogrammato per il {new_date_time.strftime('%d/%m/%Y alle %H:%M')}."
-    send_whatsapp_message(appointment["user_phone"], message)
     
     return Appointment(**appointment)
 
