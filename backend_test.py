@@ -6,7 +6,7 @@ import uuid
 
 class HairSalonAPITester:
     def __init__(self):
-        self.base_url = "https://hair-scheduler-26.preview.emergentagent.com/api"
+        self.base_url = "https://hairontime.preview.emergentagent.com/api"
         self.admin_token = None
         self.user_token = None
         self.test_user_id = None
