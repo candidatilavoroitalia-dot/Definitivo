@@ -176,8 +176,7 @@ const AdminAppointments = () => {
 
   const groupedAppointments = {
     pending: appointments.filter(apt => apt.status === 'pending'),
-    confirmed: appointments.filter(apt => apt.status === 'confirmed'),
-    cancelled: appointments.filter(apt => apt.status === 'cancelled')
+    confirmed: appointments.filter(apt => apt.status === 'confirmed')
   };
 
   const todayPending = todayAppointments.filter(apt => apt.status === 'pending');
