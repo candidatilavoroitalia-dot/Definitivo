@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { Calendar, Clock, User, Check, X, Trash2, Edit, CalendarClock } from 'lucide-react';
+import { Calendar, Clock, User, Check, X, Trash2, CalendarClock } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
