@@ -298,23 +298,33 @@ const BookingPage = ({ user, logout }) => {
                   <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
                     Orario
                   </label>
-                  <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                    {timeSlots.map((time) => (
-                      <Button
-                        key={time}
-                        onClick={() => setSelectedTime(time)}
-                        variant="outline"
-                        className={`rounded-none transition-all ${
-                          selectedTime === time
-                            ? 'bg-brand-charcoal text-white border-brand-charcoal'
-                            : 'border-brand-sand hover:border-brand-charcoal'
-                        }`}
-                        data-testid={`time-slot-${time}`}
-                      >
-                        {time}
-                      </Button>
-                    ))}
-                  </div>
+                  {loadingSlots ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Caricamento slot disponibili...
+                    </div>
+                  ) : availableSlots.length === 0 ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Nessuno slot disponibile per questa data. Prova un altro giorno.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                      {availableSlots.map((time) => (
+                        <Button
+                          key={time}
+                          onClick={() => setSelectedTime(time)}
+                          variant="outline"
+                          className={`rounded-none transition-all ${
+                            selectedTime === time
+                              ? 'bg-brand-charcoal text-white border-brand-charcoal'
+                              : 'border-brand-sand hover:border-brand-charcoal'
+                          }`}
+                          data-testid={`time-slot-${time}`}
+                        >
+                          {time}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Card>
 
