@@ -142,26 +142,40 @@ const LandingPage = ({ user, logout }) => {
               <p className="text-lg leading-relaxed text-muted-foreground max-w-xl">
                 {settings?.hero_description || 'Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.'}
               </p>
-              {!user && (
-                <Button
-                  onClick={() => navigate('/auth')}
-                  size="lg"
-                  className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
-                  data-testid="cta-button"
-                >
-                  Inizia Ora
-                </Button>
-              )}
-              {user && !user.is_admin && (
-                <Button
-                  onClick={() => navigate('/book')}
-                  size="lg"
-                  className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
-                  data-testid="book-now-button"
-                >
-                  Prenota Ora
-                </Button>
-              )}
+              <div className="flex flex-col sm:flex-row gap-4">
+                {!user && (
+                  <Button
+                    onClick={() => navigate('/auth')}
+                    size="lg"
+                    className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+                    data-testid="cta-button"
+                  >
+                    Inizia Ora
+                  </Button>
+                )}
+                {user && !user.is_admin && (
+                  <Button
+                    onClick={() => navigate('/book')}
+                    size="lg"
+                    className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+                    data-testid="book-now-button"
+                  >
+                    Prenota Ora
+                  </Button>
+                )}
+                {isInstallable && !isInstalled && (
+                  <Button
+                    onClick={handleInstallClick}
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-brand-gold text-brand-charcoal hover:bg-brand-gold hover:text-brand-charcoal rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+                    data-testid="install-app-hero-button"
+                  >
+                    <Download className="w-5 h-5 mr-2" />
+                    Scarica App
+                  </Button>
+                )}
+              </div>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
