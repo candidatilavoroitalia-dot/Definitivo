@@ -298,32 +298,61 @@ const BookingPage = ({ user, logout }) => {
                   <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
                     Orario
                   </label>
-                  {loadingSlots ? (
+                  {!selectedDate ? (
+                    <div className="text-center py-8 text-muted-foreground">
+                      Seleziona prima una data per vedere gli orari disponibili
+                    </div>
+                  ) : loadingSlots ? (
                     <div className="text-center py-8 text-muted-foreground">
                       Caricamento slot disponibili...
                     </div>
-                  ) : availableSlots.length === 0 ? (
+                  ) : timeSlots.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      Nessuno slot disponibile per questa data. Prova un altro giorno.
+                      Nessun orario configurato. Contatta il salone.
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                      {availableSlots.map((time) => (
-                        <Button
-                          key={time}
-                          onClick={() => setSelectedTime(time)}
-                          variant="outline"
-                          className={`rounded-none transition-all ${
-                            selectedTime === time
-                              ? 'bg-brand-charcoal text-white border-brand-charcoal'
-                              : 'border-brand-sand hover:border-brand-charcoal'
-                          }`}
-                          data-testid={`time-slot-${time}`}
-                        >
-                          {time}
-                        </Button>
-                      ))}
-                    </div>
+                    <>
+                      <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                        {timeSlots.map((time) => {
+                          const isAvailable = availableSlots.includes(time);
+                          const isSelected = selectedTime === time;
+                          
+                          return (
+                            <Button
+                              key={time}
+                              onClick={() => isAvailable && setSelectedTime(time)}
+                              variant="outline"
+                              disabled={!isAvailable}
+                              className={`rounded-none transition-all relative ${
+                                isSelected
+                                  ? 'bg-brand-charcoal text-white border-brand-charcoal'
+                                  : isAvailable
+                                    ? 'border-brand-sand hover:border-brand-charcoal hover:bg-brand-sand/20'
+                                    : 'border-red-200 bg-red-50 text-red-300 cursor-not-allowed line-through'
+                              }`}
+                              data-testid={`time-slot-${time}`}
+                            >
+                              {time}
+                              {!isAvailable && (
+                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full" />
+                              )}
+                            </Button>
+                          );
+                        })}
+                      </div>
+                      <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 border border-brand-sand rounded-sm"></div>
+                          <span>Disponibile</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 bg-red-50 border border-red-200 rounded-sm relative">
+                            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-400 rounded-full" />
+                          </div>
+                          <span>Occupato</span>
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
               </Card>
