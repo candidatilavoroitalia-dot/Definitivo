@@ -602,6 +602,54 @@ async def delete_all_cancelled_appointments(current_user: dict = Depends(get_adm
     result = await db.appointments.delete_many({"status": "cancelled"})
     return {"message": f"Deleted {result.deleted_count} cancelled appointments"}
 
+@api_router.post("/admin/appointments/manual", response_model=Appointment)
+async def create_manual_appointment(data: ManualAppointmentCreate, current_user: dict = Depends(get_admin_user)):
+    """Create appointment manually by admin with client details"""
+    # Ensure date_time is timezone-aware
+    if data.date_time.tzinfo is None:
+        data.date_time = data.date_time.replace(tzinfo=timezone.utc)
+    
+    if data.date_time <= datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="L'orario deve essere nel futuro")
+    
+    # Check if slot is available
+    slot_available = await is_slot_available(data.hairdresser_id, data.service_id, data.date_time)
+    if not slot_available:
+        raise HTTPException(status_code=400, detail="Questo orario non è disponibile. Seleziona un altro orario.")
+    
+    # Get service and hairdresser names
+    service = await db.services.find_one({"id": data.service_id}, {"_id": 0})
+    hairdresser = await db.hairdressers.find_one({"id": data.hairdresser_id}, {"_id": 0})
+    
+    if not service:
+        raise HTTPException(status_code=404, detail="Servizio non trovato")
+    if not hairdresser:
+        raise HTTPException(status_code=404, detail="Parrucchiere non trovato")
+    
+    appointment_id = str(uuid.uuid4())
+    appointment_doc = {
+        "id": appointment_id,
+        "user_id": f"manual_{appointment_id[:8]}",  # Manual appointments have no real user
+        "user_name": data.client_name,
+        "user_email": data.client_email or "",
+        "user_phone": data.client_phone,
+        "service_id": data.service_id,
+        "service_name": service["name"],
+        "hairdresser_id": data.hairdresser_id,
+        "hairdresser_name": hairdresser["name"],
+        "date_time": data.date_time.isoformat(),
+        "status": "confirmed",  # Manual appointments are auto-confirmed
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "is_manual": True
+    }
+    
+    await db.appointments.insert_one(appointment_doc)
+    
+    appointment_doc["date_time"] = data.date_time
+    appointment_doc["created_at"] = datetime.fromisoformat(appointment_doc["created_at"])
+    
+    return Appointment(**appointment_doc)
+
 # Admin Services Management
 @api_router.post("/admin/services", response_model=Service)
 async def create_service(service_data: ServiceCreate, current_user: dict = Depends(get_admin_user)):
