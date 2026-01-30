@@ -68,10 +68,11 @@ const InstallPWA = () => {
 
   const handleDismiss = () => {
     setShowInstallBanner(false);
+    setDeferredPrompt(null);
     localStorage.setItem('pwa-install-dismissed', 'true');
   };
 
-  if (!showInstallBanner) {
+  if (!isSupported || !showInstallBanner) {
     return null;
   }
 
