@@ -71,11 +71,11 @@ function App() {
           />
           <Route
             path="/dashboard"
-            element={user && !user.is_admin ? <Dashboard user={user} logout={logout} /> : <Navigate to="/auth" />}
+            element={user && !user.is_admin ? <Dashboard user={user} logout={logout} /> : <Navigate to={user?.is_admin ? "/admin" : "/auth"} />}
           />
           <Route
             path="/book"
-            element={user && !user.is_admin ? <BookingPage user={user} logout={logout} /> : <Navigate to="/auth" />}
+            element={user && !user.is_admin ? <BookingPage user={user} logout={logout} /> : <Navigate to={user?.is_admin ? "/admin" : "/auth"} />}
           />
           <Route
             path="/admin"
