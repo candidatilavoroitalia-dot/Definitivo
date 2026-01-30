@@ -439,6 +439,41 @@ const AdminAppointments = () => {
                           </div>
                         </div>
                       </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          onClick={() => openRescheduleModal(appointment)}
+                          variant="outline"
+                          className="border-brand-charcoal text-brand-charcoal hover:bg-brand-sand/30 rounded-none px-4 py-2"
+                          data-testid={`reschedule-confirmed-${appointment.id}`}
+                        >
+                          <CalendarClock className="w-4 h-4 mr-1" />
+                          Sposta
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setActioningId(appointment.id);
+                            setActionType('cancel');
+                          }}
+                          variant="outline"
+                          className="border-orange-500 text-orange-500 hover:bg-orange-50 rounded-none px-4 py-2"
+                          data-testid={`cancel-confirmed-${appointment.id}`}
+                        >
+                          <X className="w-4 h-4 mr-1" />
+                          Annulla
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            setActioningId(appointment.id);
+                            setActionType('delete');
+                          }}
+                          variant="outline"
+                          className="border-red-600 text-red-600 hover:bg-red-50 rounded-none px-4 py-2"
+                          data-testid={`delete-confirmed-${appointment.id}`}
+                        >
+                          <Trash2 className="w-4 h-4 mr-1" />
+                          Elimina
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 ))}
