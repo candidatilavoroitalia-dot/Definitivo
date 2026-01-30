@@ -21,6 +21,8 @@ Applicazione web completa per la prenotazione di appuntamenti per un parrucchier
 - [x] Calendario con date disabilitate (domenica, giorni passati, giorni non lavorativi)
 - [x] **Sistema disponibilità avanzato**: mostra solo slot liberi
 - [x] **Validazione backend**: blocca prenotazioni su slot già occupati
+- [x] **Slot occupati visivamente sbarrati**: orari già prenotati mostrati in rosso con testo barrato e non cliccabili
+- [x] Legenda "Disponibile/Occupato" sotto gli orari
 - [x] Riepilogo prenotazione prima della conferma
 
 ### Pannello Amministratore
