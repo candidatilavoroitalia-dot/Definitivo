@@ -150,6 +150,27 @@ const AdminSettings = () => {
 
         {/* Time Slots Settings */}
         <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Notifiche WhatsApp</h3>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium tracking-widest uppercase mb-2">
+                Numero Telefono Admin (con prefisso internazionale)
+              </Label>
+              <Input 
+                type="tel"
+                value={formData.admin_phone} 
+                onChange={(e) => setFormData({ ...formData, admin_phone: e.target.value })}
+                placeholder="+393331234567"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                Riceverai notifiche WhatsApp per i nuovi appuntamenti. Lascia vuoto per disabilitare.
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {/* Time Slots Settings */}
+        <Card className="p-8 border-brand-sand/30">
           <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Orari Disponibili</h3>
           <div className="space-y-4">
             <div className="flex gap-2">
