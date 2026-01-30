@@ -147,9 +147,12 @@ const LandingPage = ({ user, logout }) => {
               className="md:col-span-5"
             >
               <img
-                src="https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+                src={settings?.hero_image_url || "https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"}
                 alt="Salon"
                 className="w-full h-[500px] object-cover shadow-2xl"
+                onError={(e) => {
+                  e.target.src = 'https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940';
+                }}
               />
             </motion.div>
           </div>
