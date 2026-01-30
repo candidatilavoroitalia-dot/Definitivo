@@ -110,6 +110,50 @@ const AdminAppointments = () => {
     }
   };
 
+  const handleDelete = async (appointmentId) => {
+    try {
+      await axios.delete(`/admin/appointments/${appointmentId}`);
+      toast.success('Appuntamento eliminato definitivamente');
+      fetchAppointments();
+      fetchTodayAppointments();
+      setActioningId(null);
+    } catch (error) {
+      toast.error('Errore durante l\'eliminazione');
+    }
+  };
+
+  const openRescheduleModal = (appointment) => {
+    setRescheduleAppointment(appointment);
+    const aptDate = new Date(appointment.date_time);
+    setNewDate(format(aptDate, 'yyyy-MM-dd'));
+    setNewTime(format(aptDate, 'HH:mm'));
+    setRescheduleModalOpen(true);
+  };
+
+  const handleReschedule = async () => {
+    if (!newDate || !newTime) {
+      toast.error('Seleziona data e ora');
+      return;
+    }
+    
+    setRescheduling(true);
+    try {
+      const newDateTime = new Date(`${newDate}T${newTime}:00`);
+      await axios.patch(`/admin/appointments/${rescheduleAppointment.id}`, {
+        date_time: newDateTime.toISOString()
+      });
+      toast.success('Appuntamento spostato');
+      fetchAppointments();
+      fetchTodayAppointments();
+      setRescheduleModalOpen(false);
+      setRescheduleAppointment(null);
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore durante lo spostamento');
+    } finally {
+      setRescheduling(false);
+    }
+  };
+
   const StatusBadge = ({ status }) => {
     const colors = {
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-300',
