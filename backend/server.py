@@ -29,27 +29,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
-twilio_client = None
-if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
-    try:
-        twilio_client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        logging.info("Twilio client initialized successfully")
-    except Exception as e:
-        logging.warning(f"Failed to initialize Twilio client: {e}")
-
-# Scheduler
-scheduler = AsyncIOScheduler()
 
 security = HTTPBearer()
 
 # Lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    scheduler.start()
-    logging.info("Scheduler started")
     yield
-    scheduler.shutdown()
-    logging.info("Scheduler stopped")
     client.close()
 
 app = FastAPI(lifespan=lifespan)
