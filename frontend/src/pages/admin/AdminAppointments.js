@@ -74,6 +74,7 @@ const AdminAppointments = () => {
       await axios.patch(`/admin/appointments/${appointmentId}/confirm`);
       toast.success('Appuntamento confermato');
       fetchAppointments();
+      fetchTodayAppointments();
       setActioningId(null);
     } catch (error) {
       toast.error('Errore durante la conferma');
@@ -85,6 +86,7 @@ const AdminAppointments = () => {
       await axios.patch(`/admin/appointments/${appointmentId}`, { status: 'cancelled' });
       toast.success('Appuntamento cancellato');
       fetchAppointments();
+      fetchTodayAppointments();
       setActioningId(null);
     } catch (error) {
       toast.error('Errore durante la cancellazione');
