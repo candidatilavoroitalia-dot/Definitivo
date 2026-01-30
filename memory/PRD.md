@@ -20,13 +20,17 @@ Applicazione web completa per la prenotazione di appuntamenti per un parrucchier
 - [x] Flusso 3 step: Servizio → Parrucchiere → Data/Ora
 - [x] Calendario con date disabilitate (domenica, giorni passati, giorni non lavorativi)
 - [x] **Sistema disponibilità avanzato**: mostra solo slot liberi
+- [x] **Validazione backend**: blocca prenotazioni su slot già occupati
 - [x] Riepilogo prenotazione prima della conferma
 
 ### Pannello Amministratore
 - [x] Dashboard con statistiche (totale, in attesa, confermati, cancellati)
 - [x] **Sezione prioritaria "Appuntamenti di Oggi"**
 - [x] Filtri per data e stato
-- [x] Conferma/Cancella appuntamenti
+- [x] **Conferma appuntamenti** (con notifica WhatsApp)
+- [x] **Annulla appuntamenti** (cambia stato a cancelled)
+- [x] **Sposta appuntamenti** (modal con selezione nuova data/ora)
+- [x] **Elimina appuntamenti** (rimozione definitiva)
 - [x] Gestione Servizi (CRUD)
 - [x] Gestione Parrucchieri (CRUD)
 - [x] Impostazioni: testi homepage, immagine hero, giorni lavorativi, orari
@@ -48,10 +52,12 @@ POST /api/auth/login - Login
 GET /api/services - Lista servizi
 GET /api/hairdressers - Lista parrucchieri
 POST /api/availability - Verifica slot disponibili
-POST /api/appointments - Nuova prenotazione
+POST /api/appointments - Nuova prenotazione (con validazione slot)
 GET /api/appointments/my - Appuntamenti utente
 GET /api/admin/appointments - Tutti gli appuntamenti (admin)
 PATCH /api/admin/appointments/{id}/confirm - Conferma (admin)
+PATCH /api/admin/appointments/{id} - Modifica/Sposta/Annulla (admin)
+DELETE /api/admin/appointments/{id} - Elimina definitivamente (admin)
 GET /api/settings - Impostazioni app
 PUT /api/admin/settings - Aggiorna impostazioni (admin)
 ```
@@ -69,6 +75,10 @@ TWILIO_WHATSAPP_NUMBER=+14155238886
 
 ## Stato: COMPLETATO ✅
 Data ultimo aggiornamento: 30 Gennaio 2026
+
+## Bug Fix Recenti
+- [x] Validazione slot occupati nel backend (impedisce doppie prenotazioni)
+- [x] UI admin per spostare/annullare/eliminare appuntamenti
 
 ## Backlog / Miglioramenti Futuri
 - [ ] Calendario visuale nella dashboard admin
