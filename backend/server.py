@@ -215,15 +215,22 @@ def send_whatsapp_message(to_number: str, message: str) -> dict:
         return {"success": False, "error": str(e)}
 
 def schedule_appointment_reminder(appointment: dict):
-    reminder_time = appointment["date_time"] - timedelta(hours=24)
+    # Send reminder 1 hour before appointment
+    reminder_time = appointment["date_time"] - timedelta(hours=1)
+    
+    # If appointment is less than 1 hour away, send reminder in 10 seconds
     if reminder_time <= datetime.now(timezone.utc):
         reminder_time = datetime.now(timezone.utc) + timedelta(seconds=10)
     
     message = (
-        f"Ciao {appointment['user_name']}! "
-        f"Promemoria: hai un appuntamento per {appointment['service_name']} "
-        f"con {appointment['hairdresser_name']} "
-        f"il {appointment['date_time'].strftime('%d/%m/%Y alle %H:%M')}."
+        f"🔔 Promemoria Appuntamento\n\n"
+        f"Ciao {appointment['user_name']}!\n\n"
+        f"Ti ricordiamo che tra 1 ora hai un appuntamento:\n"
+        f"📅 {appointment['date_time'].strftime('%d/%m/%Y')}\n"
+        f"⏰ {appointment['date_time'].strftime('%H:%M')}\n"
+        f"✂️ {appointment['service_name']}\n"
+        f"👤 con {appointment['hairdresser_name']}\n\n"
+        f"Ti aspettiamo!"
     )
     
     scheduler.add_job(
@@ -234,7 +241,7 @@ def schedule_appointment_reminder(appointment: dict):
         id=f"reminder_{appointment['id']}",
         replace_existing=True
     )
-    logging.info(f"Scheduled reminder for appointment {appointment['id']} at {reminder_time}")
+    logging.info(f"Scheduled 1-hour reminder for appointment {appointment['id']} at {reminder_time}")
 
 # Auth routes
 @api_router.post("/auth/register", response_model=TokenResponse)
