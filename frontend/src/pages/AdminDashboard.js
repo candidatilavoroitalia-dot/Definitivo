@@ -328,8 +328,8 @@ const AdminDashboard = ({ user, logout }) => {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {actionType === 'confirm'
-                ? 'Il cliente riceverà una notifica di conferma su WhatsApp.'
-                : 'Il cliente riceverà una notifica di cancellazione su WhatsApp.'}
+                ? 'L\'appuntamento verrà confermato.'
+                : 'L\'appuntamento verrà cancellato.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
