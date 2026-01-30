@@ -140,7 +140,7 @@ const LandingPage = ({ user, logout }) => {
                 <span className="text-brand-gold">{settings?.hero_title?.split(',')[1]?.trim() || 'Sempre Disponibile'}</span>
               </h1>
               <p className="text-lg leading-relaxed text-muted-foreground max-w-xl">
-                {settings?.hero_description || 'Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria su WhatsApp. Gestisci tutto dal tuo telefono.'}
+                {settings?.hero_description || 'Prenota il tuo appuntamento in pochi secondi. Ricevi promemoria e notifiche. Gestisci tutto dal tuo telefono.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 {!user && (
