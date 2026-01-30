@@ -17,7 +17,10 @@ const BookingPage = ({ user, logout }) => {
   const [services, setServices] = useState([]);
   const [hairdressers, setHairdressers] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [workingDays, setWorkingDays] = useState([1, 2, 3, 4, 5, 6]);
   const [loading, setLoading] = useState(true);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
   const [selectedService, setSelectedService] = useState(null);
@@ -28,6 +31,13 @@ const BookingPage = ({ user, logout }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (selectedDate && selectedService && selectedHairdresser) {
+      fetchAvailableSlots();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, selectedService, selectedHairdresser]);
 
   const fetchData = async () => {
     try {
@@ -43,11 +53,43 @@ const BookingPage = ({ user, logout }) => {
         '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
         '17:00', '17:30', '18:00'
       ]);
+      setWorkingDays(settingsRes.data.working_days || [1, 2, 3, 4, 5, 6]);
     } catch (error) {
       toast.error('Errore nel caricamento dei dati');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchAvailableSlots = async () => {
+    setLoadingSlots(true);
+    setSelectedTime(null);
+    try {
+      const response = await axios.post('/availability', {
+        date: selectedDate.toISOString().split('T')[0],
+        service_id: selectedService.id,
+        hairdresser_id: selectedHairdresser.id
+      });
+      setAvailableSlots(response.data.available_slots);
+    } catch (error) {
+      toast.error('Errore nel caricamento degli slot');
+      setAvailableSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
+  const isDateDisabled = (date) => {
+    // Disable past dates
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) {
+      return true;
+    }
+    
+    // Disable non-working days (0=Sunday, 1=Monday, etc.)
+    const dayOfWeek = date.getDay();
+    return !workingDays.includes(dayOfWeek);
   };
 
   const handleSubmit = async () => {
