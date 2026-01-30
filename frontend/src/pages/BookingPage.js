@@ -1,0 +1,351 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { ChevronLeft, ChevronRight, Check, Calendar as CalendarIcon } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import { Calendar } from '../components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { format } from 'date-fns';
+import { it } from 'date-fns/locale';
+
+const BookingPage = ({ user, logout }) => {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [services, setServices] = useState([]);
+  const [hairdressers, setHairdressers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  
+  const [selectedService, setSelectedService] = useState(null);
+  const [selectedHairdresser, setSelectedHairdresser] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const [servicesRes, hairdressersRes] = await Promise.all([
+        axios.get('/services'),
+        axios.get('/hairdressers')
+      ]);
+      setServices(servicesRes.data);
+      setHairdressers(hairdressersRes.data);
+    } catch (error) {
+      toast.error('Errore nel caricamento dei dati');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+    '17:00', '17:30', '18:00'
+  ];
+
+  const handleSubmit = async () => {
+    if (!selectedService || !selectedHairdresser || !selectedDate || !selectedTime) {
+      toast.error('Completa tutti i campi');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const [hours, minutes] = selectedTime.split(':');
+      const dateTime = new Date(selectedDate);
+      dateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+
+      await axios.post('/appointments', {
+        service_id: selectedService.id,
+        hairdresser_id: selectedHairdresser.id,
+        date_time: dateTime.toISOString()
+      });
+
+      toast.success('Appuntamento prenotato! Riceverai un promemoria su WhatsApp.');
+      navigate('/dashboard');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore durante la prenotazione');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const canGoNext = () => {
+    if (step === 1) return selectedService !== null;
+    if (step === 2) return selectedHairdresser !== null;
+    if (step === 3) return selectedDate !== null && selectedTime !== null;
+    return false;
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-bone">
+        <div className="animate-pulse text-xl font-playfair">Caricamento...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-brand-bone">
+      {/* Header */}
+      <header className="bg-white border-b border-brand-sand/20" data-testid="booking-header">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 flex justify-between items-center">
+          <h1 className="text-2xl font-playfair font-bold text-brand-charcoal">
+            Prenota Appuntamento
+          </h1>
+          <Button
+            onClick={() => navigate('/dashboard')}
+            variant="ghost"
+            className="text-brand-charcoal hover:text-brand-gold font-medium tracking-wide"
+            data-testid="back-dashboard-button"
+          >
+            Torna alla Dashboard
+          </Button>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-6 py-12">
+        {/* Progress Indicator */}
+        <div className="flex justify-center items-center gap-4 mb-12" data-testid="progress-indicator">
+          {[1, 2, 3].map((s) => (
+            <div key={s} className="flex items-center">
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
+                  s <= step
+                    ? 'bg-brand-charcoal text-white'
+                    : 'bg-brand-sand text-brand-charcoal'
+                }`}
+              >
+                {s < step ? <Check className="w-5 h-5" /> : s}
+              </div>
+              {s < 3 && (
+                <div
+                  className={`w-16 h-1 mx-2 transition-all ${
+                    s < step ? 'bg-brand-charcoal' : 'bg-brand-sand'
+                  }`}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Step Content */}
+        <AnimatePresence mode="wait">
+          {step === 1 && (
+            <motion.div
+              key="step1"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
+                Scegli il Servizio
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {services.map((service) => (
+                  <Card
+                    key={service.id}
+                    onClick={() => setSelectedService(service)}
+                    className={`p-6 cursor-pointer transition-all duration-300 ${
+                      selectedService?.id === service.id
+                        ? 'border-brand-gold border-2 shadow-xl'
+                        : 'border-brand-sand/30 hover:shadow-lg'
+                    }`}
+                    data-testid={`service-card-${service.id}`}
+                  >
+                    <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-2">
+                      {service.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-3">{service.description}</p>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-brand-gold font-semibold">€{service.price.toFixed(2)}</span>
+                      <span className="text-muted-foreground">{service.duration_minutes} min</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step2"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
+                Scegli il Parrucchiere
+              </h2>
+              <div className="grid grid-cols-1 gap-6">
+                {hairdressers.map((hairdresser) => (
+                  <Card
+                    key={hairdresser.id}
+                    onClick={() => setSelectedHairdresser(hairdresser)}
+                    className={`p-6 cursor-pointer transition-all duration-300 ${
+                      selectedHairdresser?.id === hairdresser.id
+                        ? 'border-brand-gold border-2 shadow-xl'
+                        : 'border-brand-sand/30 hover:shadow-lg'
+                    }`}
+                    data-testid={`hairdresser-card-${hairdresser.id}`}
+                  >
+                    <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-2">
+                      {hairdresser.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Specialità: {hairdresser.specialties.join(', ')}
+                    </p>
+                  </Card>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
+                Scegli Data e Ora
+              </h2>
+              
+              <Card className="p-6 border-brand-sand/30">
+                <div className="mb-6">
+                  <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
+                    Data
+                  </label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="w-full justify-start text-left font-normal border-brand-charcoal/20 hover:border-brand-charcoal rounded-none"
+                        data-testid="date-picker-button"
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {selectedDate ? format(selectedDate, 'PPP', { locale: it }) : 'Seleziona una data'}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={selectedDate}
+                        onSelect={setSelectedDate}
+                        disabled={(date) => date < new Date() || date < new Date().setHours(0, 0, 0, 0)}
+                        initialFocus
+                        locale={it}
+                        data-testid="calendar"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
+                    Orario
+                  </label>
+                  <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
+                    {timeSlots.map((time) => (
+                      <Button
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        variant="outline"
+                        className={`rounded-none transition-all ${
+                          selectedTime === time
+                            ? 'bg-brand-charcoal text-white border-brand-charcoal'
+                            : 'border-brand-sand hover:border-brand-charcoal'
+                        }`}
+                        data-testid={`time-slot-${time}`}
+                      >
+                        {time}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Summary */}
+              {selectedDate && selectedTime && (
+                <Card className="p-6 bg-brand-bone border-brand-sand" data-testid="booking-summary">
+                  <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-4">
+                    Riepilogo
+                  </h3>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Servizio:</span>
+                      <span className="font-semibold">{selectedService.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Parrucchiere:</span>
+                      <span className="font-semibold">{selectedHairdresser.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Data:</span>
+                      <span className="font-semibold">{format(selectedDate, 'PPP', { locale: it })}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Ora:</span>
+                      <span className="font-semibold">{selectedTime}</span>
+                    </div>
+                    <div className="flex justify-between pt-3 border-t border-brand-sand">
+                      <span className="text-muted-foreground">Prezzo:</span>
+                      <span className="font-semibold text-brand-gold">€{selectedService.price.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between mt-12">
+          <Button
+            onClick={() => setStep(step - 1)}
+            disabled={step === 1}
+            variant="outline"
+            className="border-brand-charcoal text-brand-charcoal hover:bg-brand-charcoal hover:text-white rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all"
+            data-testid="prev-button"
+          >
+            <ChevronLeft className="w-4 h-4 mr-2" />
+            Indietro
+          </Button>
+          
+          {step < 3 ? (
+            <Button
+              onClick={() => setStep(step + 1)}
+              disabled={!canGoNext()}
+              className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+              data-testid="next-button"
+            >
+              Avanti
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleSubmit}
+              disabled={!canGoNext() || submitting}
+              className="bg-brand-gold text-brand-charcoal hover:bg-brand-gold-light rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+              data-testid="submit-booking-button"
+            >
+              {submitting ? 'Prenotazione...' : 'Conferma Prenotazione'}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default BookingPage;
