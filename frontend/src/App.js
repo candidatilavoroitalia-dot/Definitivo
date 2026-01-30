@@ -79,9 +79,11 @@ function App() {
             element={user && !user.is_admin ? <BookingPage user={user} logout={logout} /> : <Navigate to={user?.is_admin ? "/admin" : "/auth"} />}
           />
           <Route
-            path="/admin"
-            element={user && user.is_admin ? <AdminDashboard user={user} logout={logout} /> : <Navigate to={user ? "/dashboard" : "/auth"} />}
-          />
+            path="/admin/*"
+            element={user && user.is_admin ? <AdminLayout user={user} logout={logout} /> : <Navigate to={user ? "/dashboard" : "/auth"} />}
+          >
+            <Route index element={<AdminAppointments />} />
+          </Route>
         </Routes>
       </BrowserRouter>
       <Toaster position="top-center" richColors />
