@@ -735,6 +735,23 @@ async def get_settings():
             {"$set": {"admin_phone": ""}}
         )
     
+    # Ensure working_days exists
+    if "working_days" not in settings:
+        settings["working_days"] = [1, 2, 3, 4, 5, 6]
+        await db.settings.update_one(
+            {"id": "app_settings"},
+            {"$set": {"working_days": [1, 2, 3, 4, 5, 6]}}
+        )
+    
+    # Ensure opening/closing times exist
+    if "opening_time" not in settings:
+        settings["opening_time"] = "09:00"
+        settings["closing_time"] = "19:00"
+        await db.settings.update_one(
+            {"id": "app_settings"},
+            {"$set": {"opening_time": "09:00", "closing_time": "19:00"}}
+        )
+    
     return Settings(**settings)
 
 @api_router.put("/admin/settings", response_model=Settings)
