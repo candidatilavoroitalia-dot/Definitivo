@@ -383,12 +383,19 @@ async def check_availability(request: AvailabilityRequest):
         "status": {"$ne": "cancelled"}
     }, {"_id": 0}).to_list(1000)
     
+    # Batch fetch all services to avoid N+1 query
+    service_ids = list(set(apt["service_id"] for apt in appointments))
+    services_dict = {}
+    if service_ids:
+        services_list = await db.services.find({"id": {"$in": service_ids}}, {"_id": 0}).to_list(100)
+        services_dict = {s["id"]: s for s in services_list}
+    
     # Build occupied time ranges
     occupied_ranges = []
     for apt in appointments:
         apt_time = datetime.fromisoformat(apt["date_time"])
-        # Get service duration for this appointment
-        apt_service = await db.services.find_one({"id": apt["service_id"]}, {"_id": 0})
+        # Get service duration from pre-fetched services
+        apt_service = services_dict.get(apt["service_id"])
         apt_duration = apt_service["duration_minutes"] if apt_service else 30
         
         start_time = apt_time
