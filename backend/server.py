@@ -261,6 +261,10 @@ async def get_hairdressers():
 # Appointments routes
 @api_router.post("/appointments", response_model=Appointment)
 async def create_appointment(appointment_data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
+    # Ensure appointment_data.date_time is timezone-aware
+    if appointment_data.date_time.tzinfo is None:
+        appointment_data.date_time = appointment_data.date_time.replace(tzinfo=timezone.utc)
+    
     if appointment_data.date_time <= datetime.now(timezone.utc):
         raise HTTPException(status_code=400, detail="Appointment time must be in the future")
     
