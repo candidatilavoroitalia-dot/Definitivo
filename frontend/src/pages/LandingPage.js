@@ -15,7 +15,7 @@ const LandingPage = ({ user, logout }) => {
 
   const fetchSettings = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/settings`);
+      const response = await axios.get('/settings');
       setSettings(response.data);
     } catch (error) {
       console.error('Error fetching settings:', error);
