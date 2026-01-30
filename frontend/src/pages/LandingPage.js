@@ -5,6 +5,20 @@ import { Button } from '../components/ui/button';
 
 const LandingPage = ({ user, logout }) => {
   const navigate = useNavigate();
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    fetchSettings();
+  }, []);
+
+  const fetchSettings = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/settings`);
+      setSettings(response.data);
+    } catch (error) {
+      console.error('Error fetching settings:', error);
+    }
+  };
 
   const features = [
     {
