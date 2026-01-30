@@ -243,6 +243,37 @@ def schedule_appointment_reminder(appointment: dict):
     )
     logging.info(f"Scheduled 1-hour reminder for appointment {appointment['id']} at {reminder_time}")
 
+async def send_appointment_confirmation(appointment: dict):
+    """Send immediate confirmation to client when booking"""
+    message = (
+        f"✅ Appuntamento Confermato!\n\n"
+        f"Ciao {appointment['user_name']},\n\n"
+        f"Il tuo appuntamento è stato prenotato con successo:\n\n"
+        f"📅 Data: {appointment['date_time'].strftime('%d/%m/%Y')}\n"
+        f"⏰ Ora: {appointment['date_time'].strftime('%H:%M')}\n"
+        f"✂️ Servizio: {appointment['service_name']}\n"
+        f"👤 Parrucchiere: {appointment['hairdresser_name']}\n\n"
+        f"Riceverai un promemoria 1 ora prima dell'appuntamento.\n\n"
+        f"A presto! 💇"
+    )
+    send_whatsapp_message(appointment["user_phone"], message)
+
+async def notify_admin_new_appointment(appointment: dict):
+    """Notify admin about new appointment"""
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if settings and settings.get("admin_phone"):
+        message = (
+            f"🔔 Nuovo Appuntamento!\n\n"
+            f"Cliente: {appointment['user_name']}\n"
+            f"Telefono: {appointment['user_phone']}\n"
+            f"📅 {appointment['date_time'].strftime('%d/%m/%Y alle %H:%M')}\n"
+            f"✂️ {appointment['service_name']}\n"
+            f"👤 {appointment['hairdresser_name']}\n\n"
+            f"⚠️ Da confermare nel pannello admin"
+        )
+        send_whatsapp_message(settings["admin_phone"], message)
+        logging.info(f"Admin notified about new appointment {appointment['id']}")
+
 # Auth routes
 @api_router.post("/auth/register", response_model=TokenResponse)
 async def register(user_data: UserRegister):
