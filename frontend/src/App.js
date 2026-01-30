@@ -13,6 +13,7 @@ import AdminAppointments from './pages/admin/AdminAppointments';
 import AdminServices from './pages/admin/AdminServices';
 import AdminHairdressers from './pages/admin/AdminHairdressers';
 import AdminSettings from './pages/admin/AdminSettings';
+import ManualBooking from './pages/admin/ManualBooking';
 import './App.css';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
