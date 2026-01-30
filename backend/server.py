@@ -107,12 +107,14 @@ class Settings(BaseModel):
     hero_title: str
     hero_subtitle: str
     hero_description: str
+    hero_image_url: str
     time_slots: List[str]
 
 class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
     hero_subtitle: Optional[str] = None
     hero_description: Optional[str] = None
+    hero_image_url: Optional[str] = None
     time_slots: Optional[List[str]] = None
 
 class Service(BaseModel):
