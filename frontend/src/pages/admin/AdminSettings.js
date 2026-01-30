@@ -112,6 +112,24 @@ const AdminSettings = () => {
                 placeholder="https://images.pexels.com/photos/..."
                 className="mb-3"
               />
+              
+              {/* Suggested Images */}
+              <div className="mb-3">
+                <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Immagini Suggerite:</p>
+                <div className="flex flex-wrap gap-2">
+                  {suggestedImages.map((img, idx) => (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, hero_image_url: img.url })}
+                      className="text-xs px-3 py-1 bg-brand-sand/30 hover:bg-brand-gold/30 border border-brand-sand hover:border-brand-gold transition-colors"
+                    >
+                      {img.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
               {formData.hero_image_url && (
                 <div className="mt-3 border border-brand-sand/30 p-4">
                   <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Anteprima:</p>
