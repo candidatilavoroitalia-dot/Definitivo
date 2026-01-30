@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 const LandingPage = ({ user, logout }) => {
   const navigate = useNavigate();
   const [settings, setSettings] = useState(null);
+  const { isInstallable, isInstalled, installApp } = usePWAInstall();
 
   useEffect(() => {
     fetchSettings();
@@ -21,6 +22,15 @@ const LandingPage = ({ user, logout }) => {
       setSettings(response.data);
     } catch (error) {
       console.error('Error fetching settings:', error);
+    }
+  };
+
+  const handleInstallClick = async () => {
+    const result = await installApp();
+    if (result.outcome === 'accepted') {
+      toast.success('App installata con successo!');
+    } else if (result.outcome === 'ios-instructions') {
+      toast.info(result.message, { duration: 5000 });
     }
   };
 
