@@ -109,6 +109,7 @@ class Settings(BaseModel):
     hero_description: str
     hero_image_url: str
     time_slots: List[str]
+    admin_phone: str
 
 class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
@@ -116,6 +117,7 @@ class SettingsUpdate(BaseModel):
     hero_description: Optional[str] = None
     hero_image_url: Optional[str] = None
     time_slots: Optional[List[str]] = None
+    admin_phone: Optional[str] = None
 
 class Service(BaseModel):
     model_config = ConfigDict(extra="ignore")
