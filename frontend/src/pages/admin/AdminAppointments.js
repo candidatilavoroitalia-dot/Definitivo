@@ -117,8 +117,57 @@ const AdminAppointments = () => {
     cancelled: appointments.filter(apt => apt.status === 'cancelled')
   };
 
+  const todayPending = todayAppointments.filter(apt => apt.status === 'pending');
+  const todayConfirmed = todayAppointments.filter(apt => apt.status === 'confirmed');
+
   return (
     <div className="space-y-8">
+      {/* Today's Appointments Summary */}
+      {todayAppointments.length > 0 && (
+        <Card className="p-6 border-brand-gold bg-brand-gold/10" data-testid="today-summary">
+          <div className="flex items-center gap-3 mb-4">
+            <Calendar className="w-6 h-6 text-brand-gold" />
+            <h2 className="text-2xl font-playfair font-semibold text-brand-charcoal">
+              Appuntamenti di Oggi ({todayAppointments.length})
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center gap-2 text-sm">
+              <span className="px-2 py-1 bg-yellow-100 text-yellow-800 border border-yellow-300 text-xs font-medium">
+                {todayPending.length} In Attesa
+              </span>
+              <span className="px-2 py-1 bg-green-100 text-green-800 border border-green-300 text-xs font-medium">
+                {todayConfirmed.length} Confermati
+              </span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              {todayAppointments.length > 0 && (
+                <span>
+                  Prossimo: {format(new Date(todayAppointments.sort((a, b) => new Date(a.date_time) - new Date(b.date_time))[0]?.date_time), 'HH:mm', { locale: it })} - {todayAppointments[0]?.user_name}
+                </span>
+              )}
+            </div>
+          </div>
+          {todayPending.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-brand-gold/30">
+              <p className="text-sm font-medium text-brand-charcoal mb-2">Da confermare oggi:</p>
+              <div className="flex flex-wrap gap-2">
+                {todayPending.slice(0, 5).map((apt) => (
+                  <span key={apt.id} className="px-3 py-1 bg-white border border-yellow-300 text-xs">
+                    {format(new Date(apt.date_time), 'HH:mm')} - {apt.user_name}
+                  </span>
+                ))}
+                {todayPending.length > 5 && (
+                  <span className="px-3 py-1 bg-white border border-yellow-300 text-xs">
+                    +{todayPending.length - 5} altri
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
+
       {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4" data-testid="filters">
         <div className="flex-1">
