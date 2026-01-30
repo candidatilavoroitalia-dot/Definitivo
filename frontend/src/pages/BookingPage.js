@@ -56,6 +56,12 @@ const BookingPage = ({ user, logout }) => {
     '17:00', '17:30', '18:00'
   ];
 
+  const timeSlots = [
+    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
+    '17:00', '17:30', '18:00'
+  ];
+
   const handleSubmit = async () => {
     if (!selectedService || !selectedHairdresser || !selectedDate || !selectedTime) {
       toast.error('Completa tutti i campi');
