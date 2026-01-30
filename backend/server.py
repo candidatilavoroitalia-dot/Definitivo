@@ -714,6 +714,12 @@ async def delete_appointment(appointment_id: str, current_user: dict = Depends(g
         raise HTTPException(status_code=404, detail="Appointment not found")
     return {"message": "Appointment deleted"}
 
+@api_router.delete("/admin/appointments-cancelled/all")
+async def delete_all_cancelled_appointments(current_user: dict = Depends(get_admin_user)):
+    """Delete all cancelled appointments from the database"""
+    result = await db.appointments.delete_many({"status": "cancelled"})
+    return {"message": f"Deleted {result.deleted_count} cancelled appointments"}
+
 # Admin Services Management
 @api_router.post("/admin/services", response_model=Service)
 async def create_service(service_data: ServiceCreate, current_user: dict = Depends(get_admin_user)):
