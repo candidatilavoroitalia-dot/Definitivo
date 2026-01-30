@@ -111,6 +111,14 @@ class AvailabilityResponse(BaseModel):
     date: str
     available_slots: List[str]
 
+class ManualAppointmentCreate(BaseModel):
+    client_name: str
+    client_phone: str
+    client_email: Optional[str] = None
+    service_id: str
+    hairdresser_id: str
+    date_time: datetime
+
 class Service(BaseModel):
     model_config = ConfigDict(extra="ignore")
     id: str
