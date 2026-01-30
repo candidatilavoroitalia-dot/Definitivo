@@ -226,7 +226,7 @@ const Dashboard = ({ user, logout }) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Conferma Cancellazione</AlertDialogTitle>
             <AlertDialogDescription>
-              Sei sicuro di voler cancellare questo appuntamento? Riceverai una notifica di conferma su WhatsApp.
+              Sei sicuro di voler cancellare questo appuntamento?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
