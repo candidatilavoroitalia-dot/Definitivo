@@ -505,6 +505,33 @@ async def reschedule_appointment(appointment_id: str, new_date_time: datetime, c
     
     return Appointment(**appointment)
 
+# User notification preferences
+@api_router.get("/user/notification-preferences")
+async def get_notification_preferences(current_user: dict = Depends(get_current_user)):
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0, "notification_preferences": 1})
+    if not user:
+        return {"notification_preferences": []}
+    return {"notification_preferences": user.get("notification_preferences", [])}
+
+@api_router.put("/user/notification-preferences")
+async def update_notification_preferences(
+    prefs: UserNotificationPreferences,
+    current_user: dict = Depends(get_current_user)
+):
+    valid_options = ["10min", "30min", "1hour", "2hours", "1day"]
+    
+    # Validate preferences
+    for pref in prefs.notification_preferences:
+        if pref not in valid_options:
+            raise HTTPException(status_code=400, detail=f"Invalid preference: {pref}. Valid options: {valid_options}")
+    
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$set": {"notification_preferences": prefs.notification_preferences}}
+    )
+    
+    return {"notification_preferences": prefs.notification_preferences, "message": "Preferenze salvate"}
+
 # Admin routes
 @api_router.get("/admin/appointments", response_model=List[Appointment])
 async def get_all_appointments(date: Optional[str] = None, status: Optional[str] = None, current_user: dict = Depends(get_admin_user)):
