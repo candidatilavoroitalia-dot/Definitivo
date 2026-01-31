@@ -239,11 +239,7 @@ const BookingPage = ({ user, logout }) => {
                     key={hairdresser.id}
                     type="button"
                     onClick={() => setSelectedHairdresser(hairdresser)}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      setSelectedHairdresser(hairdresser);
-                    }}
-                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 ${
+                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 touch-manipulation ${
                       selectedHairdresser?.id === hairdresser.id
                         ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
                         : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
