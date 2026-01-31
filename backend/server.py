@@ -59,6 +59,10 @@ class User(BaseModel):
     name: str
     phone: str
     is_admin: bool = False
+    notification_preferences: List[str] = []  # ["10min", "30min", "1hour", "2hours", "1day"]
+
+class UserNotificationPreferences(BaseModel):
+    notification_preferences: List[str]  # Valid values: "10min", "30min", "1hour", "2hours", "1day"
 
 class TokenResponse(BaseModel):
     access_token: str
