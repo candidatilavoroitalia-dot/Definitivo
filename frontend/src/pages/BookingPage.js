@@ -197,11 +197,7 @@ const BookingPage = ({ user, logout }) => {
                     key={service.id}
                     type="button"
                     onClick={() => setSelectedService(service)}
-                    onTouchEnd={(e) => {
-                      e.preventDefault();
-                      setSelectedService(service);
-                    }}
-                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 ${
+                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 touch-manipulation ${
                       selectedService?.id === service.id
                         ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
                         : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
