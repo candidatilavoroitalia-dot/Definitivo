@@ -61,16 +61,25 @@ PUT /api/admin/settings - Aggiorna impostazioni (admin)
 ```
 
 ## Credenziali Test
-- **Admin:** admin@parrucco.it / admin123
+- **Admin:** admin@parrucco.it / adminpassword
+- **Cliente test:** cliente@test.com / test123456
 
 ## Stato: COMPLETATO ✅
-Data ultimo aggiornamento: 30 Gennaio 2026
+Data ultimo aggiornamento: 31 Gennaio 2026
 
-## Modifiche Recenti
-- [x] Rimosso sistema WhatsApp/Twilio (sostituito con notifiche push PWA)
+## Modifiche Recenti (31 Gen 2026)
+- [x] Verificato e confermato funzionamento flusso prenotazione cliente (3 step)
+- [x] Verificato e confermato creazione manuale appuntamenti admin
+- [x] Aggiornato Service Worker a v9 per forzare aggiornamento cache
+- [x] Reset password admin per test
+
+## Modifiche Precedenti (30 Gen 2026)
+- [x] Rimosso sistema WhatsApp/Twilio completamente
 - [x] Eliminati tutti gli appuntamenti cancellati dal database
 - [x] Rimossa sezione "Cancellati" dal pannello admin
 - [x] Semplificati i filtri admin
+- [x] Aggiunta pagina creazione manuale appuntamenti (/admin/nuovo)
+- [x] Fix compatibilità mobile (elementi touch-friendly)
 
 ## Backlog / Miglioramenti Futuri
 - [ ] Calendario visuale nella dashboard admin
