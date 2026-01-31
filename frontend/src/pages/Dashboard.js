@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { Calendar, Clock, User, LogOut, Plus, X } from 'lucide-react';
+import { Calendar, Clock, User, LogOut, Plus, X, Bell, Settings } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import {
@@ -24,9 +24,21 @@ const Dashboard = ({ user, logout }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cancelingId, setCancelingId] = useState(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [notificationPrefs, setNotificationPrefs] = useState([]);
+  const [savingPrefs, setSavingPrefs] = useState(false);
+
+  const notificationOptions = [
+    { value: '10min', label: '10 minuti prima' },
+    { value: '30min', label: '30 minuti prima' },
+    { value: '1hour', label: '1 ora prima' },
+    { value: '2hours', label: '2 ore prima' },
+    { value: '1day', label: '1 giorno prima' },
+  ];
 
   useEffect(() => {
     fetchAppointments();
+    fetchNotificationPrefs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
