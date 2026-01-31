@@ -143,7 +143,16 @@ const Dashboard = ({ user, logout }) => {
             </h1>
             <p className="text-sm text-muted-foreground">I tuoi appuntamenti</p>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2 md:gap-4">
+            <Button
+              onClick={() => setShowSettings(!showSettings)}
+              variant="ghost"
+              className="text-brand-charcoal hover:text-brand-gold font-medium tracking-wide"
+              data-testid="settings-button"
+            >
+              <Bell className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Notifiche</span>
+            </Button>
             <Button
               onClick={() => navigate('/')}
               variant="ghost"
@@ -158,14 +167,82 @@ const Dashboard = ({ user, logout }) => {
               className="text-brand-charcoal hover:text-brand-gold font-medium tracking-wide"
               data-testid="logout-button"
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              Esci
+              <LogOut className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Esci</span>
             </Button>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-12">
+        {/* Notification Settings Panel */}
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <Card className="p-6 border-brand-gold/30 bg-brand-gold/5">
+              <div className="flex items-center gap-3 mb-4">
+                <Bell className="w-6 h-6 text-brand-gold" />
+                <h3 className="text-xl font-playfair font-semibold text-brand-charcoal">
+                  Impostazioni Notifiche
+                </h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Scegli quando ricevere i promemoria per i tuoi appuntamenti. Puoi selezionare più opzioni.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-6">
+                {notificationOptions.map((option) => (
+                  <label
+                    key={option.value}
+                    className={`flex items-center gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      notificationPrefs.includes(option.value)
+                        ? 'border-brand-gold bg-brand-gold/10'
+                        : 'border-brand-sand/30 hover:border-brand-gold/50'
+                    }`}
+                    data-testid={`notification-option-${option.value}`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={notificationPrefs.includes(option.value)}
+                      onChange={() => toggleNotificationPref(option.value)}
+                      className="w-5 h-5 rounded border-brand-sand text-brand-gold focus:ring-brand-gold"
+                    />
+                    <span className="text-sm font-medium text-brand-charcoal">
+                      {option.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <div className="flex gap-4">
+                <Button
+                  onClick={saveNotificationPrefs}
+                  disabled={savingPrefs}
+                  className="bg-brand-charcoal text-white hover:bg-black rounded-none px-6 py-2 text-sm uppercase tracking-widest"
+                  data-testid="save-notifications-button"
+                >
+                  {savingPrefs ? 'Salvataggio...' : 'Salva Preferenze'}
+                </Button>
+                <Button
+                  onClick={() => setShowSettings(false)}
+                  variant="outline"
+                  className="rounded-none px-6 py-2 text-sm uppercase tracking-widest"
+                >
+                  Chiudi
+                </Button>
+              </div>
+              {notificationPrefs.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-4">
+                  ✓ Riceverai notifiche: {notificationPrefs.map(p => 
+                    notificationOptions.find(o => o.value === p)?.label
+                  ).join(', ')}
+                </p>
+              )}
+            </Card>
+          </motion.div>
+        )}
+
         {/* Quick Actions */}
         <div className="mb-12">
           <Button
