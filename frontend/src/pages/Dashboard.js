@@ -53,6 +53,47 @@ const Dashboard = ({ user, logout }) => {
     }
   };
 
+  const fetchNotificationPrefs = async () => {
+    try {
+      const response = await axios.get('/user/notification-preferences');
+      setNotificationPrefs(response.data.notification_preferences || []);
+    } catch (error) {
+      console.error('Error fetching notification preferences');
+    }
+  };
+
+  const toggleNotificationPref = (value) => {
+    setNotificationPrefs(prev => 
+      prev.includes(value) 
+        ? prev.filter(p => p !== value)
+        : [...prev, value]
+    );
+  };
+
+  const saveNotificationPrefs = async () => {
+    setSavingPrefs(true);
+    try {
+      await axios.put('/user/notification-preferences', {
+        notification_preferences: notificationPrefs
+      });
+      toast.success('Preferenze notifiche salvate!');
+      
+      // Request notification permission if any preference is selected
+      if (notificationPrefs.length > 0 && 'Notification' in window) {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          toast.success('Notifiche attivate!');
+        } else if (permission === 'denied') {
+          toast.error('Permesso notifiche negato. Attivalo dalle impostazioni del browser.');
+        }
+      }
+    } catch (error) {
+      toast.error('Errore nel salvataggio delle preferenze');
+    } finally {
+      setSavingPrefs(false);
+    }
+  };
+
   const handleCancel = async (appointmentId) => {
     try {
       await axios.patch(`/appointments/${appointmentId}/cancel`);
