@@ -265,7 +265,7 @@ const Dashboard = ({ user, logout }) => {
                   </label>
                 ))}
               </div>
-              <div className="flex gap-4">
+              <div className="flex flex-wrap gap-4">
                 <Button
                   onClick={saveNotificationPrefs}
                   disabled={savingPrefs}
@@ -273,6 +273,14 @@ const Dashboard = ({ user, logout }) => {
                   data-testid="save-notifications-button"
                 >
                   {savingPrefs ? 'Salvataggio...' : 'Salva Preferenze'}
+                </Button>
+                <Button
+                  onClick={testNotification}
+                  variant="outline"
+                  className="rounded-none px-6 py-2 text-sm uppercase tracking-widest border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white"
+                  data-testid="test-notification-button"
+                >
+                  🔔 Testa Notifica
                 </Button>
                 <Button
                   onClick={() => setShowSettings(false)}
