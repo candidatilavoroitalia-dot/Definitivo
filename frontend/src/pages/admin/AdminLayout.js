@@ -1,5 +1,5 @@
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LogOut, Home, Calendar, Scissors, Users, FileText, UserPlus, CalendarDays } from 'lucide-react';
+import { LogOut, Home, Calendar, Scissors, Users, FileText, UserPlus, CalendarDays, UserCheck } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 
 const AdminLayout = ({ user, logout }) => {
@@ -10,6 +10,7 @@ const AdminLayout = ({ user, logout }) => {
     { path: '/admin', icon: Calendar, label: 'Appuntamenti', exact: true },
     { path: '/admin/calendario', icon: CalendarDays, label: 'Calendario' },
     { path: '/admin/nuovo', icon: UserPlus, label: 'Nuovo' },
+    { path: '/admin/clienti', icon: UserCheck, label: 'Clienti' },
     { path: '/admin/servizi', icon: Scissors, label: 'Servizi' },
     { path: '/admin/parrucchieri', icon: Users, label: 'Parrucchieri' },
     { path: '/admin/impostazioni', icon: FileText, label: 'Impostazioni' },
