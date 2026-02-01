@@ -535,6 +535,14 @@ async def is_slot_available(hairdresser_id: str, service_id: str, date_time: dat
 # Appointments routes
 @api_router.post("/appointments", response_model=Appointment)
 async def create_appointment(appointment_data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
+    # Check if user is approved
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not user.get("is_approved", False) and not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Il tuo account non è ancora stato approvato. Attendi l'approvazione per prenotare.")
+    
     # Ensure appointment_data.date_time is timezone-aware
     if appointment_data.date_time.tzinfo is None:
         appointment_data.date_time = appointment_data.date_time.replace(tzinfo=timezone.utc)
