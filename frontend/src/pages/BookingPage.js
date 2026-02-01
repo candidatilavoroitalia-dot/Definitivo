@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { ChevronLeft, ChevronRight, Check, Calendar as CalendarIcon } from 'lucide-react';
@@ -66,7 +65,7 @@ const BookingPage = ({ user, logout }) => {
     setSelectedTime(null);
     try {
       const response = await axios.post('/availability', {
-        date: selectedDate.toISOString().split('T')[0],
+        date: format(selectedDate, 'yyyy-MM-dd'),
         service_id: selectedService.id,
         hairdresser_id: selectedHairdresser.id
       });
@@ -80,14 +79,9 @@ const BookingPage = ({ user, logout }) => {
   };
 
   const isDateDisabled = (date) => {
-    // Disable past dates
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (date < today) {
-      return true;
-    }
-    
-    // Disable non-working days (0=Sunday, 1=Monday, etc.)
+    if (date < today) return true;
     const dayOfWeek = date.getDay();
     return !workingDays.includes(dayOfWeek);
   };
@@ -100,8 +94,7 @@ const BookingPage = ({ user, logout }) => {
 
     setSubmitting(true);
     try {
-      // Create date string in format YYYY-MM-DDTHH:MM:00Z without timezone conversion
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateStr = format(selectedDate, 'yyyy-MM-dd');
       const dateTimeStr = `${dateStr}T${selectedTime}:00Z`;
 
       await axios.post('/appointments', {
@@ -117,6 +110,18 @@ const BookingPage = ({ user, logout }) => {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleServiceSelect = (service) => {
+    setSelectedService(service);
+  };
+
+  const handleHairdresserSelect = (hairdresser) => {
+    setSelectedHairdresser(hairdresser);
+  };
+
+  const goToStep = (newStep) => {
+    setStep(newStep);
   };
 
   const canGoNext = () => {
@@ -137,278 +142,216 @@ const BookingPage = ({ user, logout }) => {
   return (
     <div className="min-h-screen bg-brand-bone">
       {/* Header */}
-      <header className="bg-white border-b border-brand-sand/20" data-testid="booking-header">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-6 flex justify-between items-center">
-          <h1 className="text-2xl font-playfair font-bold text-brand-charcoal">
+      <header className="bg-white border-b border-brand-sand/20">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-playfair font-bold text-brand-charcoal">
             Prenota Appuntamento
           </h1>
           <Button
             onClick={() => navigate('/dashboard')}
             variant="ghost"
-            className="text-brand-charcoal hover:text-brand-gold font-medium tracking-wide"
-            data-testid="back-dashboard-button"
+            className="text-brand-charcoal"
           >
-            Torna alla Dashboard
+            Dashboard
           </Button>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-6 py-12">
-        {/* Progress Indicator */}
-        <div className="flex justify-center items-center gap-4 mb-12" data-testid="progress-indicator">
+      <div className="max-w-3xl mx-auto px-4 py-8">
+        {/* Progress */}
+        <div className="flex justify-center items-center gap-4 mb-8">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all ${
-                  s <= step
-                    ? 'bg-brand-charcoal text-white'
-                    : 'bg-brand-sand text-brand-charcoal'
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
+                  s <= step ? 'bg-brand-charcoal text-white' : 'bg-brand-sand text-brand-charcoal'
                 }`}
               >
                 {s < step ? <Check className="w-5 h-5" /> : s}
               </div>
               {s < 3 && (
-                <div
-                  className={`w-16 h-1 mx-2 transition-all ${
-                    s < step ? 'bg-brand-charcoal' : 'bg-brand-sand'
-                  }`}
-                />
+                <div className={`w-12 h-1 mx-2 ${s < step ? 'bg-brand-charcoal' : 'bg-brand-sand'}`} />
               )}
             </div>
           ))}
         </div>
 
-        {/* Step Content */}
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
-                Scegli il Servizio
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {services.map((service) => (
-                  <button
-                    key={service.id}
-                    type="button"
-                    onClick={() => setSelectedService(service)}
-                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 touch-manipulation ${
-                      selectedService?.id === service.id
-                        ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
-                        : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
-                    }`}
-                    data-testid={`service-card-${service.id}`}
-                  >
-                    <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-2">
-                      {service.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-3">{service.description}</p>
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-brand-gold font-semibold">€{service.price.toFixed(2)}</span>
-                      <span className="text-muted-foreground">{service.duration_minutes} min</span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
-                Scegli il Parrucchiere
-              </h2>
-              <div className="grid grid-cols-1 gap-4">
-                {hairdressers.map((hairdresser) => (
-                  <button
-                    key={hairdresser.id}
-                    type="button"
-                    onClick={() => setSelectedHairdresser(hairdresser)}
-                    className={`w-full text-left p-6 rounded-xl border bg-white transition-all duration-300 touch-manipulation ${
-                      selectedHairdresser?.id === hairdresser.id
-                        ? 'border-brand-gold border-2 shadow-xl ring-2 ring-brand-gold/20'
-                        : 'border-brand-sand/30 hover:shadow-lg active:scale-[0.98]'
-                    }`}
-                    data-testid={`hairdresser-card-${hairdresser.id}`}
-                  >
-                    <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-2">
-                      {hairdresser.name}
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Specialità: {hairdresser.specialties.join(', ')}
-                    </p>
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
-            >
-              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6" data-testid="step-title">
-                Scegli Data e Ora
-              </h2>
-              
-              <Card className="p-6 border-brand-sand/30">
-                <div className="mb-6">
-                  <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
-                    Data
-                  </label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className="w-full justify-start text-left font-normal border-brand-charcoal/20 hover:border-brand-charcoal rounded-none"
-                        data-testid="date-picker-button"
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {selectedDate ? format(selectedDate, 'PPP', { locale: it }) : 'Seleziona una data'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={selectedDate}
-                        onSelect={setSelectedDate}
-                        disabled={isDateDisabled}
-                        initialFocus
-                        locale={it}
-                        data-testid="calendar"
-                      />
-                    </PopoverContent>
-                  </Popover>
+        {/* Step 1: Servizi */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-playfair font-semibold text-brand-charcoal">
+              Scegli il Servizio
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {services.map((service) => (
+                <div
+                  key={service.id}
+                  onClick={() => handleServiceSelect(service)}
+                  className={`p-5 rounded-xl border bg-white cursor-pointer select-none ${
+                    selectedService?.id === service.id
+                      ? 'border-brand-gold border-2 shadow-lg'
+                      : 'border-brand-sand/30'
+                  }`}
+                  data-testid={`service-card-${service.id}`}
+                >
+                  <h3 className="text-lg font-playfair font-semibold text-brand-charcoal">
+                    {service.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">{service.description}</p>
+                  <div className="flex justify-between items-center text-sm mt-3">
+                    <span className="text-brand-gold font-semibold">€{service.price.toFixed(2)}</span>
+                    <span className="text-muted-foreground">{service.duration_minutes} min</span>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-                <div>
-                  <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
-                    Orario
-                  </label>
-                  {!selectedDate ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Seleziona prima una data per vedere gli orari disponibili
-                    </div>
-                  ) : loadingSlots ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Caricamento slot disponibili...
-                    </div>
-                  ) : timeSlots.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
-                      Nessun orario configurato. Contatta il salone.
-                    </div>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-3 md:grid-cols-5 gap-3">
-                        {timeSlots.map((time) => {
-                          const isAvailable = availableSlots.includes(time);
-                          const isSelected = selectedTime === time;
-                          
-                          if (isAvailable) {
-                            return (
-                              <Button
-                                key={time}
-                                onClick={() => setSelectedTime(time)}
-                                variant="outline"
-                                className={`rounded-none transition-all ${
-                                  isSelected
-                                    ? 'bg-brand-charcoal text-white border-brand-charcoal'
-                                    : 'border-brand-sand hover:border-brand-charcoal hover:bg-brand-sand/20'
-                                }`}
-                                data-testid={`time-slot-${time}`}
-                              >
-                                {time}
-                              </Button>
-                            );
-                          } else {
-                            // Slot occupato - usa div invece di Button per evitare conflitti stile
-                            return (
-                              <div
-                                key={time}
-                                className="relative inline-flex items-center justify-center h-9 px-4 py-2 text-sm font-medium rounded-none border border-red-300 bg-red-50 text-red-400 cursor-not-allowed select-none"
-                                style={{ textDecoration: 'line-through' }}
-                                data-testid={`time-slot-${time}-occupied`}
-                              >
-                                {time}
-                                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white" />
-                              </div>
-                            );
-                          }
-                        })}
-                      </div>
-                      <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 border border-brand-sand rounded-sm"></div>
-                          <span>Disponibile</span>
+        {/* Step 2: Parrucchieri */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-playfair font-semibold text-brand-charcoal">
+              Scegli il Parrucchiere
+            </h2>
+            <div className="grid grid-cols-1 gap-4">
+              {hairdressers.map((hairdresser) => (
+                <div
+                  key={hairdresser.id}
+                  onClick={() => handleHairdresserSelect(hairdresser)}
+                  className={`p-5 rounded-xl border bg-white cursor-pointer select-none ${
+                    selectedHairdresser?.id === hairdresser.id
+                      ? 'border-brand-gold border-2 shadow-lg'
+                      : 'border-brand-sand/30'
+                  }`}
+                  data-testid={`hairdresser-card-${hairdresser.id}`}
+                >
+                  <h3 className="text-lg font-playfair font-semibold text-brand-charcoal">
+                    {hairdresser.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Specialità: {hairdresser.specialties.join(', ')}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Data e Ora */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-playfair font-semibold text-brand-charcoal">
+              Scegli Data e Ora
+            </h2>
+            
+            <Card className="p-5 border-brand-sand/30">
+              <div className="mb-6">
+                <label className="text-sm font-medium uppercase mb-3 block">Data</label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-start text-left"
+                      data-testid="date-picker-button"
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {selectedDate ? format(selectedDate, 'PPP', { locale: it }) : 'Seleziona una data'}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={setSelectedDate}
+                      disabled={isDateDisabled}
+                      initialFocus
+                      locale={it}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium uppercase mb-3 block">Orario</label>
+                {!selectedDate ? (
+                  <p className="text-center py-6 text-muted-foreground">
+                    Seleziona prima una data
+                  </p>
+                ) : loadingSlots ? (
+                  <p className="text-center py-6 text-muted-foreground">Caricamento...</p>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2">
+                    {timeSlots.map((time) => {
+                      const isAvailable = availableSlots.includes(time);
+                      const isSelected = selectedTime === time;
+                      
+                      return isAvailable ? (
+                        <Button
+                          key={time}
+                          type="button"
+                          variant="outline"
+                          onClick={() => setSelectedTime(time)}
+                          className={isSelected ? 'bg-brand-charcoal text-white' : ''}
+                          data-testid={`time-slot-${time}`}
+                        >
+                          {time}
+                        </Button>
+                      ) : (
+                        <div
+                          key={time}
+                          className="h-9 flex items-center justify-center text-sm border border-red-200 bg-red-50 text-red-300 rounded-md line-through"
+                        >
+                          {time}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-red-50 border border-red-300 rounded-sm relative">
-                            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full" />
-                          </div>
-                          <span>Occupato</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Riepilogo */}
+            {selectedDate && selectedTime && (
+              <Card className="p-5 bg-brand-bone border-brand-sand">
+                <h3 className="text-lg font-playfair font-semibold text-brand-charcoal mb-3">
+                  Riepilogo
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Servizio:</span>
+                    <span className="font-semibold">{selectedService.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Parrucchiere:</span>
+                    <span className="font-semibold">{selectedHairdresser.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Data:</span>
+                    <span className="font-semibold">{format(selectedDate, 'PPP', { locale: it })}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Ora:</span>
+                    <span className="font-semibold">{selectedTime}</span>
+                  </div>
+                  <div className="flex justify-between pt-3 border-t border-brand-sand">
+                    <span className="text-muted-foreground">Prezzo:</span>
+                    <span className="font-semibold text-brand-gold">€{selectedService.price.toFixed(2)}</span>
+                  </div>
                 </div>
               </Card>
+            )}
+          </div>
+        )}
 
-              {/* Summary */}
-              {selectedDate && selectedTime && (
-                <Card className="p-6 bg-brand-bone border-brand-sand" data-testid="booking-summary">
-                  <h3 className="text-xl font-playfair font-semibold text-brand-charcoal mb-4">
-                    Riepilogo
-                  </h3>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Servizio:</span>
-                      <span className="font-semibold">{selectedService.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Parrucchiere:</span>
-                      <span className="font-semibold">{selectedHairdresser.name}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Data:</span>
-                      <span className="font-semibold">{format(selectedDate, 'PPP', { locale: it })}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Ora:</span>
-                      <span className="font-semibold">{selectedTime}</span>
-                    </div>
-                    <div className="flex justify-between pt-3 border-t border-brand-sand">
-                      <span className="text-muted-foreground">Prezzo:</span>
-                      <span className="font-semibold text-brand-gold">€{selectedService.price.toFixed(2)}</span>
-                    </div>
-                  </div>
-                </Card>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between mt-12">
+        {/* Navigation */}
+        <div className="flex justify-between mt-8">
           <Button
-            onClick={() => setStep(step - 1)}
+            type="button"
+            onClick={() => goToStep(step - 1)}
             disabled={step === 1}
             variant="outline"
-            className="border-brand-charcoal text-brand-charcoal hover:bg-brand-charcoal hover:text-white rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all"
+            className="px-6"
             data-testid="prev-button"
           >
             <ChevronLeft className="w-4 h-4 mr-2" />
@@ -417,9 +360,10 @@ const BookingPage = ({ user, logout }) => {
           
           {step < 3 ? (
             <Button
-              onClick={() => setStep(step + 1)}
+              type="button"
+              onClick={() => goToStep(step + 1)}
               disabled={!canGoNext()}
-              className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+              className="bg-brand-charcoal text-white px-6"
               data-testid="next-button"
             >
               Avanti
@@ -427,9 +371,10 @@ const BookingPage = ({ user, logout }) => {
             </Button>
           ) : (
             <Button
+              type="button"
               onClick={handleSubmit}
               disabled={!canGoNext() || submitting}
-              className="bg-brand-gold text-brand-charcoal hover:bg-brand-gold-light rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+              className="bg-brand-gold text-brand-charcoal px-6"
               data-testid="submit-booking-button"
             >
               {submitting ? 'Prenotazione...' : 'Conferma Prenotazione'}
