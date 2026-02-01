@@ -177,6 +177,7 @@ class User(BaseModel):
     name: str
     phone: str
     is_admin: bool = False
+    is_approved: bool = False  # Nuovo: utente deve essere approvato per prenotare
     notification_preferences: List[str] = []  # ["10min", "30min", "1hour", "2hours", "1day"]
 
 class UserNotificationPreferences(BaseModel):
