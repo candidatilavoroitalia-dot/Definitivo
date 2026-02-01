@@ -82,7 +82,7 @@ function App() {
           />
           <Route
             path="/book"
-            element={user && !user.is_admin ? <BookingPage user={user} logout={logout} /> : <Navigate to={user?.is_admin ? "/admin" : "/auth"} />}
+            element={user && !user.is_admin && user.is_approved ? <BookingPage user={user} logout={logout} /> : <Navigate to={user?.is_admin ? "/admin" : (user ? "/dashboard" : "/auth")} />}
           />
           <Route
             path="/admin/*"
