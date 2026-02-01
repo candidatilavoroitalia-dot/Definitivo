@@ -358,17 +358,19 @@ const AdminAppointments = () => {
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                          <Button
-                            onClick={() => {
-                              setActioningId(appointment.id);
-                              setActionType('confirm');
-                            }}
-                            className="bg-green-600 hover:bg-green-700 text-white rounded-none px-4 py-2"
-                            data-testid={`confirm-button-${appointment.id}`}
-                          >
-                            <Check className="w-4 h-4 mr-1" />
-                            Conferma
-                          </Button>
+                          {appointment.status === 'pending' && (
+                            <Button
+                              onClick={() => {
+                                setActioningId(appointment.id);
+                                setActionType('confirm');
+                              }}
+                              className="bg-green-600 hover:bg-green-700 text-white rounded-none px-4 py-2"
+                              data-testid={`confirm-button-${appointment.id}`}
+                            >
+                              <Check className="w-4 h-4 mr-1" />
+                              Conferma
+                            </Button>
+                          )}
                           <Button
                             onClick={() => openRescheduleModal(appointment)}
                             variant="outline"
