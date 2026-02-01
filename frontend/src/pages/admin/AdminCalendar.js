@@ -262,16 +262,24 @@ const AdminCalendar = () => {
               const isNonWorking = isNonWorkingDay(day);
               const isSpecial = isSpecialClosure(day);
               const isToday = isSameDay(day, new Date());
+              
+              let bgColor = 'bg-brand-charcoal text-white';
+              if (isToday && !isClosed) {
+                bgColor = 'bg-brand-gold text-brand-charcoal';
+              } else if (isNonWorking) {
+                bgColor = 'bg-red-400 text-white'; // Giorni non lavorativi (più chiaro)
+              } else if (isSpecial) {
+                bgColor = 'bg-red-600 text-white'; // Chiusure straordinarie (più scuro)
+              }
+              
               return (
                 <div
                   key={i}
-                  className={`p-2 text-center text-sm font-semibold rounded ${
-                    isClosed ? 'bg-red-500 text-white' : isToday ? 'bg-brand-gold text-brand-charcoal' : 'bg-brand-charcoal text-white'
-                  }`}
+                  className={`p-2 text-center text-sm font-semibold rounded ${bgColor}`}
                 >
                   <div>{format(day, 'EEE', { locale: it })}</div>
                   <div>{format(day, 'd')}</div>
-                  {isClosed && <div className="text-xs">{getClosureReason(day)}</div>}
+                  {isSpecial && <div className="text-xs truncate">{getClosureReason(day)}</div>}
                 </div>
               );
             })}
