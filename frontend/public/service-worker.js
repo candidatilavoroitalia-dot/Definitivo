@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parrucco-v11';
+const CACHE_NAME = 'parrucco-v12';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
@@ -36,6 +36,71 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Push notification event - HANDLE INCOMING NOTIFICATIONS
+self.addEventListener('push', (event) => {
+  console.log('Push notification received:', event);
+  
+  let data = {
+    title: 'Promemoria Appuntamento',
+    body: 'Hai un appuntamento in programma!',
+    icon: '/logo192.png',
+    badge: '/logo192.png'
+  };
+  
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
+  }
+  
+  const options = {
+    body: data.body,
+    icon: data.icon || '/logo192.png',
+    badge: data.badge || '/logo192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      url: data.url || '/'
+    },
+    actions: [
+      { action: 'open', title: 'Apri App' },
+      { action: 'close', title: 'Chiudi' }
+    ]
+  };
+  
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// Notification click event
+self.addEventListener('notificationclick', (event) => {
+  console.log('Notification clicked:', event);
+  event.notification.close();
+  
+  if (event.action === 'close') {
+    return;
+  }
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // If app is already open, focus it
+        for (const client of clientList) {
+          if (client.url.includes(self.location.origin) && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // Otherwise open new window
+        if (clients.openWindow) {
+          return clients.openWindow(event.notification.data.url || '/dashboard');
+        }
+      })
+  );
 });
 
 // Fetch event - serve from cache, fallback to network
