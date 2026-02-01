@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import BookingPage from './pages/BookingPage';
 import AdminLayout from './pages/admin/AdminLayout';
 import AdminAppointments from './pages/admin/AdminAppointments';
+import AdminCalendar from './pages/admin/AdminCalendar';
 import AdminServices from './pages/admin/AdminServices';
 import AdminHairdressers from './pages/admin/AdminHairdressers';
 import AdminSettings from './pages/admin/AdminSettings';
