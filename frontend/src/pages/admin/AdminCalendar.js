@@ -302,7 +302,7 @@ const AdminCalendar = () => {
                 }
 
                 return (
-                  <div key={i} className="p-1 bg-white border rounded min-h-[50px]">
+                  <div key={i} className="p-1 bg-white border rounded min-h-[60px] min-w-[120px]">
                     {appts.map((apt) => {
                       const aptTime = apt.date_time.split('T')[1]?.substring(0, 5);
                       const aptStart = timeToMinutes(aptTime);
