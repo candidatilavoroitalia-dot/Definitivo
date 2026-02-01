@@ -265,6 +265,16 @@ class ServiceUpdate(BaseModel):
     price: Optional[float] = None
     description: Optional[str] = None
 
+class Closure(BaseModel):
+    model_config = ConfigDict(extra="ignore")
+    id: str
+    date: str  # YYYY-MM-DD
+    reason: str  # es. "Ferie", "Natale", "Ferragosto"
+
+class ClosureCreate(BaseModel):
+    date: str  # YYYY-MM-DD
+    reason: str
+
 class AppointmentCreate(BaseModel):
     hairdresser_id: str
     service_id: str
