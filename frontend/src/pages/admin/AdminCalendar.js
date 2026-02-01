@@ -303,13 +303,24 @@ const AdminCalendar = () => {
 
                 return (
                   <div key={i} className="p-1 bg-white border rounded min-h-[60px] min-w-[120px]">
-                    {appts.map((apt) => {
+                    {appts.map((apt, aptIndex) => {
                       const aptTime = apt.date_time.split('T')[1]?.substring(0, 5);
                       const aptStart = timeToMinutes(aptTime);
                       const slotStart = timeToMinutes(time);
-                      const isFirstSlot = aptStart >= slotStart && aptStart < slotStart + 30;
                       const service = services.find(s => s.id === apt.service_id);
                       const duration = service?.duration_minutes || 30;
+                      
+                      // Show details if this is the slot where the appointment starts
+                      // or if it's the first slot that contains this appointment
+                      const isStartSlot = aptStart >= slotStart && aptStart < slotStart + 30;
+                      
+                      // Check if this appointment was already shown in a previous slot
+                      const prevSlotIndex = timeSlots.indexOf(time) - 1;
+                      const prevSlot = prevSlotIndex >= 0 ? timeSlots[prevSlotIndex] : null;
+                      const prevSlotEnd = prevSlot ? timeToMinutes(prevSlot) + 30 : 0;
+                      const wasInPrevSlot = prevSlot && aptStart < prevSlotEnd;
+                      
+                      const showDetails = isStartSlot || (!wasInPrevSlot && aptIndex === 0);
                       
                       return (
                         <div
@@ -317,7 +328,7 @@ const AdminCalendar = () => {
                           className={`text-xs p-1 rounded mb-1 text-white ${getStatusColor(apt.status)}`}
                           title={`${aptTime} - ${apt.client_name || apt.user_name} - ${apt.service_name} (${duration} min)`}
                         >
-                          {isFirstSlot ? (
+                          {showDetails ? (
                             <>
                               <div className="font-semibold whitespace-normal break-words">{aptTime} {apt.client_name || apt.user_name}</div>
                               <div className="whitespace-normal break-words opacity-90">{apt.service_name} ({duration}min)</div>
