@@ -319,8 +319,8 @@ const AdminCalendar = () => {
                         >
                           {isFirstSlot ? (
                             <>
-                              <div className="font-semibold truncate">{aptTime} {apt.client_name || apt.user_name}</div>
-                              <div className="truncate opacity-90">{apt.service_name} ({duration}min)</div>
+                              <div className="font-semibold whitespace-normal break-words">{aptTime} {apt.client_name || apt.user_name}</div>
+                              <div className="whitespace-normal break-words opacity-90">{apt.service_name} ({duration}min)</div>
                             </>
                           ) : (
                             <div className="text-center opacity-75">↓</div>
