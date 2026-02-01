@@ -281,7 +281,7 @@ const AdminAppointments = () => {
             Totale
           </div>
           <div className="text-4xl font-playfair font-bold text-brand-charcoal">
-            {appointments.length}
+            {activeAppointments.length}
           </div>
         </Card>
         <Card className="p-6 border-yellow-300 bg-yellow-50">
@@ -307,15 +307,22 @@ const AdminAppointments = () => {
           <div className="animate-pulse text-xl font-playfair">Caricamento...</div>
         </div>
       ) : (
-        <div className="space-y-12">
-          {/* Pending Appointments */}
-          {groupedAppointments.pending.length > 0 && (
-            <div>
-              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6">
-                Da Confermare ({groupedAppointments.pending.length})
-              </h2>
-              <div className="space-y-4">
-                {groupedAppointments.pending.map((appointment) => (
+        <div className="space-y-6">
+          {/* Filtered Results Header */}
+          {(dateFilter || nameFilter) && (
+            <div className="text-sm text-muted-foreground">
+              Trovati {filteredAppointments.length} appuntamenti
+              {dateFilter && ` per ${dateFilter}`}
+              {nameFilter && ` con nome "${nameFilter}"`}
+            </div>
+          )}
+          
+          {/* All Filtered Appointments */}
+          {filteredAppointments.length > 0 ? (
+            <div className="space-y-4">
+              {filteredAppointments
+                .sort((a, b) => new Date(a.date_time) - new Date(b.date_time))
+                .map((appointment) => (
                   <motion.div
                     key={appointment.id}
                     initial={{ opacity: 0, y: 20 }}
