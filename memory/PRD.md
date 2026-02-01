@@ -73,9 +73,17 @@ PUT /api/admin/settings - Aggiorna impostazioni (admin)
 - **Cliente test:** cliente@test.com / test123456
 
 ## Stato: COMPLETATO ✅
-Data ultimo aggiornamento: 31 Gennaio 2026
+Data ultimo aggiornamento: 1 Febbraio 2026
 
-## Modifiche Recenti (31 Gen 2026)
+## Modifiche Recenti (1 Feb 2026)
+- [x] **NUOVA FUNZIONALITÀ**: Impostazioni notifiche appuntamenti nella dashboard cliente
+- [x] Opzioni: 10 min, 30 min, 1 ora, 2 ore, 1 giorno prima (selezionabili multiple)
+- [x] Nuovi endpoint API: GET/PUT /api/user/notification-preferences
+- [x] Fix compatibilità mobile: rimosso onTouchEnd, aggiunto touch-manipulation
+- [x] Pulito database appuntamenti
+- [x] Service Worker aggiornato a v11
+
+## Modifiche Precedenti (31 Gen 2026)
 - [x] Verificato e confermato funzionamento flusso prenotazione cliente (3 step)
 - [x] Verificato e confermato creazione manuale appuntamenti admin
 - [x] Aggiornato Service Worker a v9 per forzare aggiornamento cache
