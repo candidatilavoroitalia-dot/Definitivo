@@ -387,6 +387,54 @@ async def login(credentials: UserLogin):
     
     return TokenResponse(access_token=token, user=user_obj)
 
+# Admin - Gestione Clienti
+@api_router.get("/admin/clients")
+async def get_clients(current_user: dict = Depends(get_current_user)):
+    # Verifica che sia admin
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Ottieni tutti i clienti (non admin)
+    clients = await db.users.find({"is_admin": {"$ne": True}}, {"_id": 0, "password_hash": 0}).to_list(1000)
+    return clients
+
+@api_router.put("/admin/clients/{client_id}/approve")
+async def approve_client(client_id: str, current_user: dict = Depends(get_current_user)):
+    # Verifica che sia admin
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Approva il cliente
+    result = await db.users.update_one(
+        {"id": client_id},
+        {"$set": {"is_approved": True}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    return {"message": "Cliente approvato con successo"}
+
+@api_router.put("/admin/clients/{client_id}/revoke")
+async def revoke_client(client_id: str, current_user: dict = Depends(get_current_user)):
+    # Verifica che sia admin
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Revoca approvazione
+    result = await db.users.update_one(
+        {"id": client_id},
+        {"$set": {"is_approved": False}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Client not found")
+    
+    return {"message": "Approvazione revocata"}
+
 # Services routes
 @api_router.get("/services", response_model=List[Service])
 async def get_services():
