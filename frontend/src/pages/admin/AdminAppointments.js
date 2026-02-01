@@ -240,30 +240,35 @@ const AdminAppointments = () => {
       <div className="flex flex-col md:flex-row gap-4" data-testid="filters">
         <div className="flex-1">
           <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
-            Periodo
+            Data
           </label>
-          <select 
+          <input 
+            type="date"
             value={dateFilter} 
             onChange={(e) => setDateFilter(e.target.value)}
             className="w-full h-10 px-3 py-2 text-sm border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold"
-          >
-            <option value="all">Tutti</option>
-            <option value="today">Solo Oggi</option>
-          </select>
+          />
         </div>
         <div className="flex-1">
           <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
-            Stato
+            Cerca per Nome
           </label>
-          <select 
-            value={statusFilter} 
-            onChange={(e) => setStatusFilter(e.target.value)}
+          <input 
+            type="text"
+            placeholder="Nome cliente..."
+            value={nameFilter} 
+            onChange={(e) => setNameFilter(e.target.value)}
             className="w-full h-10 px-3 py-2 text-sm border border-input rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-brand-gold"
+          />
+        </div>
+        <div className="flex items-end">
+          <Button 
+            variant="outline" 
+            onClick={() => { setDateFilter(''); setNameFilter(''); }}
+            className="h-10"
           >
-            <option value="all">Tutti</option>
-            <option value="pending">In Attesa</option>
-            <option value="confirmed">Confermati</option>
-          </select>
+            Pulisci Filtri
+          </Button>
         </div>
       </div>
 
