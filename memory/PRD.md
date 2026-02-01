@@ -42,11 +42,15 @@ Applicazione web completa per la prenotazione di appuntamenti per un parrucchier
 - [x] Pulsante "Scarica App" nella homepage
 - [x] Service Worker per funzionalità offline base
 
-### Notifiche Appuntamenti (NUOVO)
+### Notifiche Appuntamenti
 - [x] Impostazioni notifiche nella dashboard cliente
 - [x] Opzioni multiple selezionabili: 10 min, 30 min, 1 ora, 2 ore, 1 giorno prima
+- [x] Default: 10 minuti e 1 ora prima
 - [x] Preferenze salvate a livello utente nel database
-- [x] Richiesta permesso Push Notification al salvataggio
+- [x] Registrazione Push Subscription (VAPID)
+- [x] Service Worker gestisce eventi push e click notifica
+- [x] Pulsante "Testa Notifica" per verificare funzionamento
+- [x] **Scheduler automatico** che invia notifiche agli orari impostati
 
 ## API Endpoints Principali
 ```
