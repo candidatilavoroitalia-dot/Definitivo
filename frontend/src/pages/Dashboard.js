@@ -56,9 +56,16 @@ const Dashboard = ({ user, logout }) => {
   const fetchNotificationPrefs = async () => {
     try {
       const response = await axios.get('/user/notification-preferences');
-      setNotificationPrefs(response.data.notification_preferences || []);
+      const prefs = response.data.notification_preferences || [];
+      // Se non ci sono preferenze salvate, imposta i default
+      if (prefs.length === 0) {
+        setNotificationPrefs(['10min', '1hour']);
+      } else {
+        setNotificationPrefs(prefs);
+      }
     } catch (error) {
-      console.error('Error fetching notification preferences');
+      // In caso di errore, usa i default
+      setNotificationPrefs(['10min', '1hour']);
     }
   };
 
