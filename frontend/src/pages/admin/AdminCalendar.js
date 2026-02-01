@@ -65,29 +65,44 @@ const AdminCalendar = () => {
     const slotIndex = timeSlots.indexOf(time);
     const nextSlot = timeSlots[slotIndex + 1];
     const slotEnd = nextSlot ? timeToMinutes(nextSlot) : slotStart + 30;
-    const slotHour = parseInt(time.split(':')[0]);
-    const slotMinute = parseInt(time.split(':')[1]);
     
     return appointments.filter(apt => {
       const aptDate = apt.date_time.split('T')[0];
       const aptTimeStr = apt.date_time.split('T')[1]?.substring(0, 5);
       if (!aptTimeStr) return false;
       
-      const aptHour = parseInt(aptTimeStr.split(':')[0]);
-      const aptMinute = parseInt(aptTimeStr.split(':')[1]);
-      
       const matchesDay = aptDate === dayStr;
+      if (!matchesDay) return false;
       
-      // Match if appointment falls within this 30-minute slot
-      // Es: slot 09:00 matches appointments from 09:00 to 09:29
-      // Es: slot 09:30 matches appointments from 09:30 to 09:59
-      const matchesTime = aptHour === slotHour && 
-        aptMinute >= slotMinute && 
-        aptMinute < slotMinute + 30;
+      // Get appointment duration from service
+      const service = services.find(s => s.id === apt.service_id);
+      const duration = service?.duration_minutes || apt.duration_minutes || 30;
+      
+      const aptStart = timeToMinutes(aptTimeStr);
+      const aptEnd = aptStart + duration;
+      
+      // Check if appointment overlaps with this slot
+      // Appointment overlaps if: aptStart < slotEnd AND aptEnd > slotStart
+      const overlaps = aptStart < slotEnd && aptEnd > slotStart;
       
       const matchesHairdresser = selectedHairdresser === 'all' || apt.hairdresser_id === selectedHairdresser;
-      return matchesDay && matchesTime && matchesHairdresser;
+      return overlaps && matchesHairdresser;
     });
+  };
+
+  // Check if this is the first slot of an appointment (to show details)
+  const isFirstSlotOfAppointment = (day, time, apt) => {
+    const aptTimeStr = apt.date_time.split('T')[1]?.substring(0, 5);
+    if (!aptTimeStr) return false;
+    
+    const aptStart = timeToMinutes(aptTimeStr);
+    const slotStart = timeToMinutes(time);
+    const slotIndex = timeSlots.indexOf(time);
+    const prevSlot = timeSlots[slotIndex - 1];
+    const prevSlotEnd = prevSlot ? timeToMinutes(prevSlot) + (timeToMinutes(time) - timeToMinutes(prevSlot)) : 0;
+    
+    // It's the first slot if appointment starts in this slot
+    return aptStart >= slotStart || (slotIndex === 0) || aptStart > prevSlotEnd;
   };
 
   const isClosureDay = (day) => {
