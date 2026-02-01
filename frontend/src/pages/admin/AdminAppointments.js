@@ -181,14 +181,28 @@ const AdminAppointments = () => {
   };
 
   // Statistiche escludendo cancellati
-  const activeAppointments = appointments.filter(apt => apt.status !== 'cancelled');
+184|  const activeAppointments = appointments.filter(apt => apt.status !== 'cancelled');
+  
+  // Applica filtri ai gruppi
+  const getFilteredByGroup = (status) => {
+    let filtered = filteredAppointments.filter(apt => apt.status === status);
+    return filtered;
+  };
+
   const groupedAppointments = {
-    pending: activeAppointments.filter(apt => apt.status === 'pending'),
-    confirmed: activeAppointments.filter(apt => apt.status === 'confirmed')
+    pending: getFilteredByGroup('pending'),
+    confirmed: getFilteredByGroup('confirmed')
   };
 
   const todayPending = todayAppointments.filter(apt => apt.status === 'pending');
   const todayConfirmed = todayAppointments.filter(apt => apt.status === 'confirmed');
+  
+  // Stats basate su tutti gli appuntamenti (non filtrati)
+  const totalStats = {
+    total: activeAppointments.length,
+    pending: activeAppointments.filter(apt => apt.status === 'pending').length,
+    confirmed: activeAppointments.filter(apt => apt.status === 'confirmed').length
+  };
 
   return (
     <div className="space-y-8">
