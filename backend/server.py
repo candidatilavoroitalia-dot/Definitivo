@@ -216,6 +216,7 @@ async def register(user_data: UserRegister):
         "name": user_data.name,
         "phone": user_data.phone,
         "is_admin": False,
+        "notification_preferences": ["10min", "1hour"],  # Default notifications
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -227,7 +228,8 @@ async def register(user_data: UserRegister):
         email=user_data.email,
         name=user_data.name,
         phone=user_data.phone,
-        is_admin=False
+        is_admin=False,
+        notification_preferences=["10min", "1hour"]
     )
     
     return TokenResponse(access_token=token, user=user)
