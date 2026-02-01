@@ -69,7 +69,10 @@ const AdminCalendar = () => {
     const nextSlot = timeSlots[slotIndex + 1];
     const slotEnd = nextSlot ? timeToMinutes(nextSlot) : slotStart + 30;
     
-    return appointments.filter(apt => {
+    // First, get all non-cancelled appointments for this slot
+    const activeAppointments = appointments.filter(apt => {
+      if (apt.status === 'cancelled') return false;
+      
       const aptDate = apt.date_time.split('T')[0];
       const aptTimeStr = apt.date_time.split('T')[1]?.substring(0, 5);
       if (!aptTimeStr) return false;
@@ -85,12 +88,13 @@ const AdminCalendar = () => {
       const aptEnd = aptStart + duration;
       
       // Check if appointment overlaps with this slot
-      // Appointment overlaps if: aptStart < slotEnd AND aptEnd > slotStart
       const overlaps = aptStart < slotEnd && aptEnd > slotStart;
       
       const matchesHairdresser = selectedHairdresser === 'all' || apt.hairdresser_id === selectedHairdresser;
       return overlaps && matchesHairdresser;
     });
+    
+    return activeAppointments;
   };
 
   // Check if this is the first slot of an appointment (to show details)
