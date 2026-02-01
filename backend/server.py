@@ -73,6 +73,27 @@ async def check_and_send_notifications():
     )
     users = await users_cursor.to_list(1000)
     
+    if not users:
+        return
+    
+    # Collect all user IDs
+    user_ids = [user.get("id") for user in users if user.get("id")]
+    
+    # Batch fetch all upcoming appointments for all users in a single query
+    all_appointments = await db.appointments.find({
+        "user_id": {"$in": user_ids},
+        "status": {"$in": ["pending", "confirmed"]},
+        "date_time": {"$gt": now.isoformat()}
+    }, {"_id": 0}).to_list(10000)
+    
+    # Group appointments by user_id
+    appointments_by_user = {}
+    for apt in all_appointments:
+        uid = apt.get("user_id")
+        if uid not in appointments_by_user:
+            appointments_by_user[uid] = []
+        appointments_by_user[uid].append(apt)
+    
     for user in users:
         user_id = user.get("id")
         prefs = user.get("notification_preferences", [])
@@ -81,12 +102,8 @@ async def check_and_send_notifications():
         if not subscription or not prefs:
             continue
         
-        # Get user's upcoming appointments
-        appointments = await db.appointments.find({
-            "user_id": user_id,
-            "status": {"$in": ["pending", "confirmed"]},
-            "date_time": {"$gt": now.isoformat()}
-        }, {"_id": 0}).to_list(100)
+        # Get user's appointments from pre-fetched data
+        appointments = appointments_by_user.get(user_id, [])
         
         for apt in appointments:
             apt_time = datetime.fromisoformat(apt["date_time"])
