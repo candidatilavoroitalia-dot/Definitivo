@@ -69,6 +69,22 @@ const AdminClients = () => {
     }
   };
 
+  const deleteClient = async (clientId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_URL}/api/admin/clients/${clientId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setClients(clients.filter(c => c.id !== clientId));
+        setDeleteConfirm(null);
+      }
+    } catch (error) {
+      console.error('Error deleting client:', error);
+    }
+  };
+
   const filteredClients = clients.filter(client => {
     const matchesSearch = 
       client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
