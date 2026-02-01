@@ -16,11 +16,13 @@ const AdminCalendar = () => {
   const [closures, setClosures] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showClosureDialog, setShowClosureDialog] = useState(false);
+  const [showClosuresList, setShowClosuresList] = useState(false);
   const [newClosure, setNewClosure] = useState({ date: '', reason: '' });
   const [hairdressers, setHairdressers] = useState([]);
   const [selectedHairdresser, setSelectedHairdresser] = useState('all');
   const [timeSlots, setTimeSlots] = useState([]);
   const [services, setServices] = useState([]);
+  const [workingDays, setWorkingDays] = useState([1, 2, 3, 4, 5, 6]); // Default: Lun-Sab
 
   useEffect(() => {
     fetchData();
@@ -40,6 +42,7 @@ const AdminCalendar = () => {
       setClosures(closuresRes.data);
       setHairdressers(hairdressersRes.data);
       setTimeSlots(settingsRes.data.time_slots || ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00']);
+      setWorkingDays(settingsRes.data.working_days || [1, 2, 3, 4, 5, 6]);
       setServices(servicesRes.data);
     } catch (error) {
       toast.error('Errore nel caricamento');
