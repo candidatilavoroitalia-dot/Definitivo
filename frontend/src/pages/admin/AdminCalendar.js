@@ -19,12 +19,8 @@ const AdminCalendar = () => {
   const [newClosure, setNewClosure] = useState({ date: '', reason: '' });
   const [hairdressers, setHairdressers] = useState([]);
   const [selectedHairdresser, setSelectedHairdresser] = useState('all');
-
-  const timeSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-    '17:00', '17:30', '18:00'
-  ];
+  const [timeSlots, setTimeSlots] = useState([]);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -33,14 +29,18 @@ const AdminCalendar = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const [appointmentsRes, closuresRes, hairdressersRes] = await Promise.all([
+      const [appointmentsRes, closuresRes, hairdressersRes, settingsRes, servicesRes] = await Promise.all([
         axios.get('/admin/appointments'),
         axios.get('/closures'),
-        axios.get('/hairdressers')
+        axios.get('/hairdressers'),
+        axios.get('/settings'),
+        axios.get('/services')
       ]);
       setAppointments(appointmentsRes.data);
       setClosures(closuresRes.data);
       setHairdressers(hairdressersRes.data);
+      setTimeSlots(settingsRes.data.time_slots || ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30', '18:00']);
+      setServices(servicesRes.data);
     } catch (error) {
       toast.error('Errore nel caricamento');
     } finally {
@@ -48,11 +48,23 @@ const AdminCalendar = () => {
     }
   };
 
+  // Helper: convert time string to minutes from midnight
+  const timeToMinutes = (time) => {
+    const [h, m] = time.split(':').map(Number);
+    return h * 60 + m;
+  };
+
   const weekStart = startOfWeek(currentWeek, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
+  // Get appointments that overlap with this slot (considering duration)
   const getAppointmentsForSlot = (day, time) => {
     const dayStr = format(day, 'yyyy-MM-dd');
+    const slotStart = timeToMinutes(time);
+    // Calculate slot end based on next slot or +30 min
+    const slotIndex = timeSlots.indexOf(time);
+    const nextSlot = timeSlots[slotIndex + 1];
+    const slotEnd = nextSlot ? timeToMinutes(nextSlot) : slotStart + 30;
     const slotHour = parseInt(time.split(':')[0]);
     const slotMinute = parseInt(time.split(':')[1]);
     
