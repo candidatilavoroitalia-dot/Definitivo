@@ -53,11 +53,26 @@ const AdminCalendar = () => {
 
   const getAppointmentsForSlot = (day, time) => {
     const dayStr = format(day, 'yyyy-MM-dd');
+    const slotHour = parseInt(time.split(':')[0]);
+    const slotMinute = parseInt(time.split(':')[1]);
+    
     return appointments.filter(apt => {
       const aptDate = apt.date_time.split('T')[0];
-      const aptTime = apt.date_time.split('T')[1]?.substring(0, 5);
+      const aptTimeStr = apt.date_time.split('T')[1]?.substring(0, 5);
+      if (!aptTimeStr) return false;
+      
+      const aptHour = parseInt(aptTimeStr.split(':')[0]);
+      const aptMinute = parseInt(aptTimeStr.split(':')[1]);
+      
       const matchesDay = aptDate === dayStr;
-      const matchesTime = aptTime === time;
+      
+      // Match if appointment falls within this 30-minute slot
+      // Es: slot 09:00 matches appointments from 09:00 to 09:29
+      // Es: slot 09:30 matches appointments from 09:30 to 09:59
+      const matchesTime = aptHour === slotHour && 
+        aptMinute >= slotMinute && 
+        aptMinute < slotMinute + 30;
+      
       const matchesHairdresser = selectedHairdresser === 'all' || apt.hairdresser_id === selectedHairdresser;
       return matchesDay && matchesTime && matchesHairdresser;
     });
