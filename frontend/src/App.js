@@ -92,6 +92,7 @@ function App() {
             <Route index element={<AdminAppointments />} />
             <Route path="calendario" element={<AdminCalendar />} />
             <Route path="nuovo" element={<ManualBooking />} />
+            <Route path="clienti" element={<AdminClients />} />
             <Route path="servizi" element={<AdminServices />} />
             <Route path="parrucchieri" element={<AdminHairdressers />} />
             <Route path="impostazioni" element={<AdminSettings />} />
