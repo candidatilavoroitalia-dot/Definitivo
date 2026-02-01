@@ -85,19 +85,26 @@ const AdminClients = () => {
     }
   };
 
-  const filteredClients = clients.filter(client => {
-    const matchesSearch = 
-      client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      client.phone?.includes(searchTerm);
-    
-    const matchesFilter = 
-      filter === 'all' ||
-      (filter === 'pending' && !client.is_approved) ||
-      (filter === 'approved' && client.is_approved);
-    
-    return matchesSearch && matchesFilter;
-  });
+  const filteredClients = clients
+    .filter(client => {
+      const matchesSearch = 
+        client.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        client.phone?.includes(searchTerm);
+      
+      const matchesFilter = 
+        filter === 'all' ||
+        (filter === 'pending' && !client.is_approved) ||
+        (filter === 'approved' && client.is_approved);
+      
+      return matchesSearch && matchesFilter;
+    })
+    .sort((a, b) => {
+      // Non approvati prima
+      if (!a.is_approved && b.is_approved) return -1;
+      if (a.is_approved && !b.is_approved) return 1;
+      return 0;
+    });
 
   const pendingCount = clients.filter(c => !c.is_approved).length;
   const approvedCount = clients.filter(c => c.is_approved).length;
