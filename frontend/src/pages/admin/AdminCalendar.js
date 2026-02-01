@@ -108,15 +108,42 @@ const AdminCalendar = () => {
     return aptStart >= slotStart || (slotIndex === 0) || aptStart > prevSlotEnd;
   };
 
+  // Check if day is closed (either non-working day or special closure)
   const isClosureDay = (day) => {
+    const dayOfWeek = day.getDay(); // 0=Dom, 1=Lun, etc.
+    // Check if it's a non-working day (from settings)
+    if (!workingDays.includes(dayOfWeek)) {
+      return true;
+    }
+    // Check if it's a special closure (ferie, feste)
+    const dayStr = format(day, 'yyyy-MM-dd');
+    return closures.some(c => c.date === dayStr);
+  };
+
+  // Check if it's a regular non-working day
+  const isNonWorkingDay = (day) => {
+    const dayOfWeek = day.getDay();
+    return !workingDays.includes(dayOfWeek);
+  };
+
+  // Check if it's a special closure
+  const isSpecialClosure = (day) => {
     const dayStr = format(day, 'yyyy-MM-dd');
     return closures.some(c => c.date === dayStr);
   };
 
   const getClosureReason = (day) => {
+    // First check special closures
     const dayStr = format(day, 'yyyy-MM-dd');
     const closure = closures.find(c => c.date === dayStr);
-    return closure?.reason || '';
+    if (closure) return closure.reason;
+    
+    // Then check non-working day
+    const dayOfWeek = day.getDay();
+    if (!workingDays.includes(dayOfWeek)) {
+      return 'Chiuso';
+    }
+    return '';
   };
 
   const handleAddClosure = async () => {
