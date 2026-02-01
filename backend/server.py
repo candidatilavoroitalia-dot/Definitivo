@@ -398,6 +398,11 @@ async def get_hairdressers():
 # Availability check
 @api_router.post("/availability", response_model=AvailabilityResponse)
 async def check_availability(request: AvailabilityRequest):
+    # Check if date is a closure day
+    closure = await db.closures.find_one({"date": request.date}, {"_id": 0})
+    if closure:
+        return AvailabilityResponse(date=request.date, available_slots=[])
+    
     # Get settings for time slots
     settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
     if not settings:
