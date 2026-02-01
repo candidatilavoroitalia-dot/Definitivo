@@ -220,22 +220,33 @@ const AdminCalendar = () => {
         </Button>
       </div>
 
-      {/* Closures List */}
+      {/* Compact Closures Badge */}
       {closures.length > 0 && (
-        <Card className="p-4 bg-red-50 border-red-200">
-          <h4 className="font-semibold text-red-800 mb-2">Giorni di Chiusura</h4>
-          <div className="flex flex-wrap gap-2">
-            {closures.map(c => (
-              <span key={c.id} className="inline-flex items-center gap-2 bg-white px-3 py-1 rounded border border-red-300 text-sm">
-                <CalendarIcon className="w-4 h-4 text-red-500" />
-                {format(parseISO(c.date), 'd MMM yyyy', { locale: it })} - {c.reason}
-                <button onClick={() => handleDeleteClosure(c.id)} className="text-red-500 hover:text-red-700">
-                  <X className="w-4 h-4" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </Card>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowClosuresList(!showClosuresList)}
+            className="inline-flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-800 px-4 py-2 rounded-full text-sm font-medium transition-colors"
+          >
+            <CalendarIcon className="w-4 h-4" />
+            {closures.length} chiusure straordinarie
+            <ChevronRight className={`w-4 h-4 transition-transform ${showClosuresList ? 'rotate-90' : ''}`} />
+          </button>
+          {showClosuresList && (
+            <div className="flex flex-wrap gap-2">
+              {closures.slice(0, 5).map(c => (
+                <span key={c.id} className="inline-flex items-center gap-1 bg-white px-2 py-1 rounded border border-red-300 text-xs">
+                  {format(parseISO(c.date), 'd/MM', { locale: it })} - {c.reason}
+                  <button onClick={() => handleDeleteClosure(c.id)} className="text-red-500 hover:text-red-700 ml-1">
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
+              {closures.length > 5 && (
+                <span className="text-xs text-red-600">+{closures.length - 5} altre</span>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* Calendar Grid */}
@@ -248,6 +259,8 @@ const AdminCalendar = () => {
             </div>
             {weekDays.map((day, i) => {
               const isClosed = isClosureDay(day);
+              const isNonWorking = isNonWorkingDay(day);
+              const isSpecial = isSpecialClosure(day);
               const isToday = isSameDay(day, new Date());
               return (
                 <div
