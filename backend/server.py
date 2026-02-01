@@ -72,6 +72,10 @@ class User(BaseModel):
 class UserNotificationPreferences(BaseModel):
     notification_preferences: List[str]  # Valid values: "10min", "30min", "1hour", "2hours", "1day"
 
+class PushSubscription(BaseModel):
+    endpoint: str
+    keys: Dict[str, str]
+
 class TokenResponse(BaseModel):
     access_token: str
     user: User
