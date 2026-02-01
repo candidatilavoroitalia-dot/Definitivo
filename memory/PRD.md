@@ -42,6 +42,12 @@ Applicazione web completa per la prenotazione di appuntamenti per un parrucchier
 - [x] Pulsante "Scarica App" nella homepage
 - [x] Service Worker per funzionalità offline base
 
+### Notifiche Appuntamenti (NUOVO)
+- [x] Impostazioni notifiche nella dashboard cliente
+- [x] Opzioni multiple selezionabili: 10 min, 30 min, 1 ora, 2 ore, 1 giorno prima
+- [x] Preferenze salvate a livello utente nel database
+- [x] Richiesta permesso Push Notification al salvataggio
+
 ## API Endpoints Principali
 ```
 POST /api/auth/register - Registrazione
@@ -51,6 +57,8 @@ GET /api/hairdressers - Lista parrucchieri
 POST /api/availability - Verifica slot disponibili
 POST /api/appointments - Nuova prenotazione (con validazione slot)
 GET /api/appointments/my - Appuntamenti utente
+GET /api/user/notification-preferences - Preferenze notifiche utente (NUOVO)
+PUT /api/user/notification-preferences - Aggiorna preferenze notifiche (NUOVO)
 GET /api/admin/appointments - Tutti gli appuntamenti (admin)
 PATCH /api/admin/appointments/{id}/confirm - Conferma (admin)
 PATCH /api/admin/appointments/{id} - Modifica/Sposta (admin)
