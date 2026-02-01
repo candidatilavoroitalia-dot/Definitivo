@@ -381,7 +381,8 @@ async def login(credentials: UserLogin):
         email=user["email"],
         name=user["name"],
         phone=user["phone"],
-        is_admin=user.get("is_admin", False)
+        is_admin=user.get("is_admin", False),
+        is_approved=user.get("is_approved", False)
     )
     
     return TokenResponse(access_token=token, user=user_obj)
