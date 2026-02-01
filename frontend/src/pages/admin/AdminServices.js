@@ -35,7 +35,7 @@ const AdminServices = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (editingService) {
+      if (editingService && editingService.id) {
         await axios.put(`/admin/services/${editingService.id}`, formData);
         toast.success('Servizio aggiornato');
       } else {
