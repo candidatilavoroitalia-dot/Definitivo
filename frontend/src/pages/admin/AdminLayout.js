@@ -9,9 +9,9 @@ const AdminLayout = ({ user, logout }) => {
   const menuItems = [
     { path: '/admin', icon: Calendar, label: 'Appuntamenti', exact: true },
     { path: '/admin/nuovo', icon: UserPlus, label: 'Nuovo' },
-    { path: '/admin/services', icon: Scissors, label: 'Servizi' },
-    { path: '/admin/hairdressers', icon: Users, label: 'Parrucchieri' },
-    { path: '/admin/settings', icon: FileText, label: 'Impostazioni' },
+    { path: '/admin/servizi', icon: Scissors, label: 'Servizi' },
+    { path: '/admin/parrucchieri', icon: Users, label: 'Parrucchieri' },
+    { path: '/admin/impostazioni', icon: FileText, label: 'Impostazioni' },
   ];
 
   const isActive = (path, exact) => {
