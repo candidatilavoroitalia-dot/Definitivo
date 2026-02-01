@@ -559,11 +559,6 @@ async def create_appointment(appointment_data: AppointmentCreate, current_user: 
     if not slot_available:
         raise HTTPException(status_code=400, detail="Questo orario non è più disponibile. Seleziona un altro orario.")
     
-    # Get user details
-    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
     # Get hairdresser details
     hairdresser = await db.hairdressers.find_one({"id": appointment_data.hairdresser_id}, {"_id": 0})
     if not hairdresser:
