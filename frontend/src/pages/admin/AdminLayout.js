@@ -99,7 +99,7 @@ const AdminLayout = ({ user, logout }) => {
 
       {/* Navigation */}
       <div className="bg-white border-b border-brand-sand/20">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="w-full px-4">
           <nav className="flex gap-1 overflow-x-auto" data-testid="admin-nav">
             {menuItems.map((item) => {
               const Icon = item.icon;
