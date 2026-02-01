@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
-import { User, Phone, Mail, Check, X, Search } from 'lucide-react';
+import { User, Phone, Mail, Check, X, Search, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -12,6 +12,7 @@ const AdminClients = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('all'); // 'all', 'pending', 'approved'
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   useEffect(() => {
     fetchClients();
