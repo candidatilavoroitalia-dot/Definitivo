@@ -231,10 +231,36 @@ const AdminClients = () => {
                       <Button
                         onClick={() => revokeClient(client.id)}
                         variant="outline"
-                        className="border-red-500 text-red-500 hover:bg-red-50 rounded-none"
+                        className="border-orange-500 text-orange-500 hover:bg-orange-50 rounded-none"
                       >
                         <X className="w-4 h-4 mr-1" />
                         Revoca
+                      </Button>
+                    )}
+                    {deleteConfirm === client.id ? (
+                      <div className="flex gap-1">
+                        <Button
+                          onClick={() => deleteClient(client.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white rounded-none"
+                        >
+                          Conferma
+                        </Button>
+                        <Button
+                          onClick={() => setDeleteConfirm(null)}
+                          variant="outline"
+                          className="rounded-none"
+                        >
+                          Annulla
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        onClick={() => setDeleteConfirm(client.id)}
+                        variant="outline"
+                        className="border-red-600 text-red-600 hover:bg-red-50 rounded-none"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        Elimina
                       </Button>
                     )}
                   </div>
