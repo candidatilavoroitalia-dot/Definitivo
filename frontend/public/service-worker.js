@@ -1,4 +1,4 @@
-const CACHE_NAME = 'parrucco-v16';
+const CACHE_NAME = 'parrucco-v17';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
