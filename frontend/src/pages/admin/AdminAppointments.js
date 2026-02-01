@@ -51,12 +51,13 @@ const StatusBadge = ({ status }) => {
 
 const AdminAppointments = () => {
   const [appointments, setAppointments] = useState([]);
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actioningId, setActioningId] = useState(null);
   const [actionType, setActionType] = useState(null);
-  const [dateFilter, setDateFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('');
+  const [nameFilter, setNameFilter] = useState('');
   
   // Reschedule modal state
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
@@ -68,13 +69,33 @@ const AdminAppointments = () => {
   useEffect(() => {
     fetchAppointments();
     fetchTodayAppointments();
-  }, [dateFilter, statusFilter]);
+  }, []);
+
+  useEffect(() => {
+    // Filter appointments locally
+    let filtered = appointments.filter(apt => apt.status !== 'cancelled'); // Escludi cancellati
+    
+    if (dateFilter) {
+      filtered = filtered.filter(apt => apt.date_time.startsWith(dateFilter));
+    }
+    
+    if (nameFilter.trim()) {
+      const search = nameFilter.toLowerCase().trim();
+      filtered = filtered.filter(apt => 
+        (apt.client_name?.toLowerCase().includes(search)) ||
+        (apt.user_name?.toLowerCase().includes(search))
+      );
+    }
+    
+    setFilteredAppointments(filtered);
+  }, [appointments, dateFilter, nameFilter]);
 
   const fetchTodayAppointments = async () => {
     try {
       const today = new Date().toISOString().split('T')[0];
       const response = await axios.get(`/admin/appointments?date=${today}`);
-      setTodayAppointments(response.data);
+      // Escludi cancellati anche da oggi
+      setTodayAppointments(response.data.filter(apt => apt.status !== 'cancelled'));
     } catch (error) {
       console.error('Error fetching today appointments');
     }
@@ -82,22 +103,7 @@ const AdminAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      let url = '/admin/appointments';
-      const params = [];
-      
-      if (dateFilter === 'today') {
-        params.push(`date=${new Date().toISOString().split('T')[0]}`);
-      }
-      
-      if (statusFilter !== 'all') {
-        params.push(`status=${statusFilter}`);
-      }
-      
-      if (params.length > 0) {
-        url += '?' + params.join('&');
-      }
-      
-      const response = await axios.get(url);
+      const response = await axios.get('/admin/appointments');
       setAppointments(response.data);
     } catch (error) {
       toast.error('Errore nel caricamento degli appuntamenti');
