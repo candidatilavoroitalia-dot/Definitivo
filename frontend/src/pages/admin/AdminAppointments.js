@@ -409,7 +409,7 @@ const AdminAppointments = () => {
                 ))}
               </div>
             </div>
-          )}
+          ) : null}
 
           {/* Confirmed Appointments */}
           {groupedAppointments.confirmed.length > 0 && (
