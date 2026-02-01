@@ -546,6 +546,80 @@ async def update_notification_preferences(
     
     return {"notification_preferences": prefs.notification_preferences, "message": "Preferenze salvate"}
 
+# Push subscription endpoints
+@api_router.get("/push/vapid-public-key")
+async def get_vapid_public_key():
+    """Return VAPID public key for push subscription"""
+    return {"publicKey": VAPID_PUBLIC_KEY}
+
+@api_router.post("/push/subscribe")
+async def subscribe_push(
+    subscription: PushSubscription,
+    current_user: dict = Depends(get_current_user)
+):
+    """Save push subscription for user"""
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$set": {"push_subscription": subscription.dict()}}
+    )
+    return {"message": "Push subscription salvata"}
+
+@api_router.delete("/push/unsubscribe")
+async def unsubscribe_push(current_user: dict = Depends(get_current_user)):
+    """Remove push subscription for user"""
+    await db.users.update_one(
+        {"id": current_user["sub"]},
+        {"$unset": {"push_subscription": ""}}
+    )
+    return {"message": "Push subscription rimossa"}
+
+@api_router.post("/push/test")
+async def test_push_notification(current_user: dict = Depends(get_current_user)):
+    """Send a test push notification to the current user"""
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user or "push_subscription" not in user:
+        raise HTTPException(status_code=400, detail="Nessuna subscription push trovata. Attiva prima le notifiche.")
+    
+    subscription = user["push_subscription"]
+    try:
+        webpush(
+            subscription_info=subscription,
+            data=json.dumps({
+                "title": "Test Notifica 🔔",
+                "body": "Le notifiche funzionano correttamente!",
+                "icon": "/logo192.png",
+                "url": "/dashboard"
+            }),
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims={"sub": VAPID_EMAIL}
+        )
+        return {"message": "Notifica di test inviata!"}
+    except WebPushException as e:
+        raise HTTPException(status_code=500, detail=f"Errore invio notifica: {str(e)}")
+
+# Function to send notification to a specific user
+async def send_push_to_user(user_id: str, title: str, body: str, url: str = "/dashboard"):
+    """Helper function to send push notification to a user"""
+    user = await db.users.find_one({"id": user_id}, {"_id": 0, "push_subscription": 1})
+    if not user or "push_subscription" not in user:
+        return False
+    
+    try:
+        webpush(
+            subscription_info=user["push_subscription"],
+            data=json.dumps({
+                "title": title,
+                "body": body,
+                "icon": "/logo192.png",
+                "url": url
+            }),
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims={"sub": VAPID_EMAIL}
+        )
+        return True
+    except WebPushException:
+        return False
+
 # Admin routes
 @api_router.get("/admin/appointments", response_model=List[Appointment])
 async def get_all_appointments(date: Optional[str] = None, status: Optional[str] = None, current_user: dict = Depends(get_admin_user)):
