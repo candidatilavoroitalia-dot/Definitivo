@@ -14,6 +14,7 @@ import AdminCalendar from './pages/admin/AdminCalendar';
 import AdminServices from './pages/admin/AdminServices';
 import AdminHairdressers from './pages/admin/AdminHairdressers';
 import AdminSettings from './pages/admin/AdminSettings';
+import AdminClients from './pages/admin/AdminClients';
 import ManualBooking from './pages/admin/ManualBooking';
 import './App.css';
 
