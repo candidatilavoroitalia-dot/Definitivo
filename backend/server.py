@@ -40,10 +40,120 @@ JWT_EXPIRATION_HOURS = 24 * 7  # 7 days
 
 security = HTTPBearer()
 
+# Notification scheduler task
+async def notification_scheduler():
+    """Background task that checks appointments and sends notifications"""
+    while True:
+        try:
+            await check_and_send_notifications()
+        except Exception as e:
+            logging.error(f"Notification scheduler error: {e}")
+        await asyncio.sleep(60)  # Check every minute
+
+async def check_and_send_notifications():
+    """Check upcoming appointments and send notifications based on user preferences"""
+    now = datetime.now(timezone.utc)
+    
+    # Time windows for each preference (in minutes)
+    time_windows = {
+        "10min": 10,
+        "30min": 30,
+        "1hour": 60,
+        "2hours": 120,
+        "1day": 1440
+    }
+    
+    # Get all users with notification preferences and push subscriptions
+    users_cursor = db.users.find(
+        {
+            "notification_preferences": {"$exists": True, "$ne": []},
+            "push_subscription": {"$exists": True}
+        },
+        {"_id": 0}
+    )
+    users = await users_cursor.to_list(1000)
+    
+    for user in users:
+        user_id = user.get("id")
+        prefs = user.get("notification_preferences", [])
+        subscription = user.get("push_subscription")
+        
+        if not subscription or not prefs:
+            continue
+        
+        # Get user's upcoming appointments
+        appointments = await db.appointments.find({
+            "user_id": user_id,
+            "status": {"$in": ["pending", "confirmed"]},
+            "date_time": {"$gt": now.isoformat()}
+        }, {"_id": 0}).to_list(100)
+        
+        for apt in appointments:
+            apt_time = datetime.fromisoformat(apt["date_time"])
+            if apt_time.tzinfo is None:
+                apt_time = apt_time.replace(tzinfo=timezone.utc)
+            
+            minutes_until = (apt_time - now).total_seconds() / 60
+            
+            for pref in prefs:
+                window = time_windows.get(pref, 0)
+                # Check if we're within 1 minute of the notification time
+                if window - 1 <= minutes_until <= window + 1:
+                    # Check if notification already sent
+                    notification_key = f"{apt['id']}_{pref}"
+                    already_sent = await db.sent_notifications.find_one({"key": notification_key})
+                    
+                    if not already_sent:
+                        # Format notification message
+                        time_str = apt_time.strftime("%H:%M")
+                        date_str = apt_time.strftime("%d/%m/%Y")
+                        
+                        if pref == "10min":
+                            title = "⏰ Appuntamento tra 10 minuti!"
+                        elif pref == "30min":
+                            title = "⏰ Appuntamento tra 30 minuti!"
+                        elif pref == "1hour":
+                            title = "📅 Appuntamento tra 1 ora"
+                        elif pref == "2hours":
+                            title = "📅 Appuntamento tra 2 ore"
+                        else:
+                            title = "📅 Appuntamento domani"
+                        
+                        body = f"{apt.get('service_name', 'Servizio')} con {apt.get('hairdresser_name', 'Parrucchiere')} alle {time_str}"
+                        
+                        # Send notification
+                        try:
+                            webpush(
+                                subscription_info=subscription,
+                                data=json.dumps({
+                                    "title": title,
+                                    "body": body,
+                                    "icon": "/logo192.png",
+                                    "url": "/dashboard"
+                                }),
+                                vapid_private_key=VAPID_PRIVATE_KEY,
+                                vapid_claims={"sub": VAPID_EMAIL}
+                            )
+                            # Mark as sent
+                            await db.sent_notifications.insert_one({
+                                "key": notification_key,
+                                "sent_at": now.isoformat(),
+                                "user_id": user_id,
+                                "appointment_id": apt["id"]
+                            })
+                            logging.info(f"Notification sent: {notification_key}")
+                        except WebPushException as e:
+                            logging.error(f"Failed to send notification: {e}")
+
 # Lifespan
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Start notification scheduler
+    scheduler_task = asyncio.create_task(notification_scheduler())
+    logging.info("Notification scheduler started")
     yield
+    # Cleanup
+    scheduler_task.cancel()
     client.close()
 
 app = FastAPI(lifespan=lifespan)
