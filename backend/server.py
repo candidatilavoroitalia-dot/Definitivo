@@ -164,7 +164,7 @@ class UserRegister(BaseModel):
     email: EmailStr
     password: str
     name: str
-    phone: str = Field(..., pattern=r'^\+\d{1,15}$')
+    phone: str
 
 class UserLogin(BaseModel):
     email: EmailStr
