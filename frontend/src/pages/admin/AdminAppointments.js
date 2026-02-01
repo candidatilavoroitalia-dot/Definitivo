@@ -452,10 +452,16 @@ const AdminAppointments = () => {
                             {appointment.service_name}
                           </h3>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm text-muted-foreground">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-sm text-muted-foreground">
                           <div className="flex items-center gap-2">
                             <User className="w-4 h-4" />
                             <span>{appointment.user_name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="w-4 h-4" />
+                            <a href={`tel:${appointment.user_phone}`} className="hover:text-brand-gold">
+                              {appointment.user_phone}
+                            </a>
                           </div>
                           <div className="flex items-center gap-2">
                             <Calendar className="w-4 h-4" />
