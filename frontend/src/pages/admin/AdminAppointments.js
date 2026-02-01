@@ -180,9 +180,11 @@ const AdminAppointments = () => {
     }
   };
 
+  // Statistiche escludendo cancellati
+  const activeAppointments = appointments.filter(apt => apt.status !== 'cancelled');
   const groupedAppointments = {
-    pending: appointments.filter(apt => apt.status === 'pending'),
-    confirmed: appointments.filter(apt => apt.status === 'confirmed')
+    pending: activeAppointments.filter(apt => apt.status === 'pending'),
+    confirmed: activeAppointments.filter(apt => apt.status === 'confirmed')
   };
 
   const todayPending = todayAppointments.filter(apt => apt.status === 'pending');
