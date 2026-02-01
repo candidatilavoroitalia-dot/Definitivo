@@ -83,21 +83,64 @@ const Dashboard = ({ user, logout }) => {
       await axios.put('/user/notification-preferences', {
         notification_preferences: notificationPrefs
       });
-      toast.success('Preferenze notifiche salvate!');
       
-      // Request notification permission if any preference is selected
-      if (notificationPrefs.length > 0 && 'Notification' in window) {
+      // Request notification permission and register push subscription
+      if (notificationPrefs.length > 0 && 'Notification' in window && 'serviceWorker' in navigator) {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
-          toast.success('Notifiche attivate!');
+          try {
+            // Get service worker registration
+            const registration = await navigator.serviceWorker.ready;
+            
+            // Get VAPID public key from env or backend
+            const vapidKey = process.env.REACT_APP_VAPID_PUBLIC_KEY;
+            
+            if (vapidKey) {
+              // Convert VAPID key to Uint8Array
+              const urlBase64ToUint8Array = (base64String) => {
+                const padding = '='.repeat((4 - base64String.length % 4) % 4);
+                const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+                const rawData = window.atob(base64);
+                const outputArray = new Uint8Array(rawData.length);
+                for (let i = 0; i < rawData.length; ++i) {
+                  outputArray[i] = rawData.charCodeAt(i);
+                }
+                return outputArray;
+              };
+              
+              // Subscribe to push
+              const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(vapidKey)
+              });
+              
+              // Send subscription to backend
+              await axios.post('/push/subscribe', subscription.toJSON());
+              toast.success('Notifiche push attivate!');
+            }
+          } catch (pushError) {
+            console.error('Push subscription error:', pushError);
+            toast.success('Preferenze salvate (notifiche push non disponibili su questo browser)');
+          }
         } else if (permission === 'denied') {
           toast.error('Permesso notifiche negato. Attivalo dalle impostazioni del browser.');
         }
+      } else {
+        toast.success('Preferenze notifiche salvate!');
       }
     } catch (error) {
       toast.error('Errore nel salvataggio delle preferenze');
     } finally {
       setSavingPrefs(false);
+    }
+  };
+
+  const testNotification = async () => {
+    try {
+      await axios.post('/push/test');
+      toast.success('Notifica di test inviata!');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Errore invio notifica di test');
     }
   };
 
