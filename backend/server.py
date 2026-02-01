@@ -435,6 +435,28 @@ async def revoke_client(client_id: str, current_user: dict = Depends(get_current
     
     return {"message": "Approvazione revocata"}
 
+@api_router.delete("/admin/clients/{client_id}")
+async def delete_client(client_id: str, current_user: dict = Depends(get_current_user)):
+    # Verifica che sia admin
+    user = await db.users.find_one({"id": current_user["sub"]}, {"_id": 0})
+    if not user or not user.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    # Verifica che il cliente esista e non sia admin
+    client = await db.users.find_one({"id": client_id}, {"_id": 0})
+    if not client:
+        raise HTTPException(status_code=404, detail="Client not found")
+    if client.get("is_admin", False):
+        raise HTTPException(status_code=403, detail="Cannot delete admin users")
+    
+    # Elimina il cliente
+    await db.users.delete_one({"id": client_id})
+    
+    # Elimina anche gli appuntamenti del cliente
+    await db.appointments.delete_many({"user_id": client_id})
+    
+    return {"message": "Cliente eliminato con successo"}
+
 # Services routes
 @api_router.get("/services", response_model=List[Service])
 async def get_services():
