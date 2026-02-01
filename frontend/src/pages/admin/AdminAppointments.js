@@ -407,7 +407,6 @@ const AdminAppointments = () => {
                     </Card>
                   </motion.div>
                 ))}
-              </div>
             </div>
           )}
 
