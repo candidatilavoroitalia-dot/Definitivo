@@ -225,16 +225,19 @@ const AdminCalendar = () => {
 
                 return (
                   <div key={i} className="p-1 bg-white border rounded min-h-[50px]">
-                    {appts.map((apt) => (
-                      <div
-                        key={apt.id}
-                        className={`text-xs p-1 rounded mb-1 text-white ${getStatusColor(apt.status)}`}
-                        title={`${apt.client_name || apt.user_name} - ${apt.service_name}`}
-                      >
-                        <div className="font-semibold truncate">{apt.client_name || apt.user_name}</div>
-                        <div className="truncate opacity-90">{apt.service_name}</div>
-                      </div>
-                    ))}
+                    {appts.map((apt) => {
+                      const aptTime = apt.date_time.split('T')[1]?.substring(0, 5);
+                      return (
+                        <div
+                          key={apt.id}
+                          className={`text-xs p-1 rounded mb-1 text-white ${getStatusColor(apt.status)}`}
+                          title={`${aptTime} - ${apt.client_name || apt.user_name} - ${apt.service_name}`}
+                        >
+                          <div className="font-semibold truncate">{aptTime} {apt.client_name || apt.user_name}</div>
+                          <div className="truncate opacity-90">{apt.service_name}</div>
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}
