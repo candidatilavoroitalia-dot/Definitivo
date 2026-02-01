@@ -317,48 +317,51 @@ const AdminAppointments = () => {
             </div>
           )}
           
-          {/* All Filtered Appointments */}
-          {filteredAppointments.length > 0 && (
-            <div className="space-y-4">
-              {filteredAppointments
-                .sort((a, b) => new Date(a.date_time) - new Date(b.date_time))
-                .map((appointment) => (
-                  <motion.div
-                    key={appointment.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    data-testid={`appointment-${appointment.id}`}
-                  >
-                    <Card className="p-6 border-yellow-300 hover:shadow-xl transition-all duration-300">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-3">
-                            <StatusBadge status={appointment.status} />
-                            <h3 className="text-xl font-playfair font-semibold text-brand-charcoal">
-                              {appointment.service_name}
-                            </h3>
+          {/* Pending Appointments - Da Confermare */}
+          {groupedAppointments.pending.length > 0 && (
+            <div>
+              <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal mb-6">
+                Da Confermare ({groupedAppointments.pending.length})
+              </h2>
+              <div className="space-y-4">
+                {groupedAppointments.pending
+                  .sort((a, b) => new Date(a.date_time) - new Date(b.date_time))
+                  .map((appointment) => (
+                    <motion.div
+                      key={appointment.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      data-testid={`appointment-${appointment.id}`}
+                    >
+                      <Card className="p-6 border-yellow-300 bg-yellow-50/50 hover:shadow-xl transition-all duration-300">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-3">
+                              <StatusBadge status={appointment.status} />
+                              <h3 className="text-xl font-playfair font-semibold text-brand-charcoal">
+                                {appointment.service_name}
+                              </h3>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm text-muted-foreground">
+                              <div className="flex items-center gap-2">
+                                <User className="w-4 h-4" />
+                                <span>{appointment.user_name}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-4 h-4" />
+                                <span>{format(new Date(appointment.date_time), 'd MMM yyyy', { locale: it })}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4" />
+                                <span>{format(new Date(appointment.date_time), 'HH:mm')}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <User className="w-4 h-4" />
+                                <span>{appointment.hairdresser_name}</span>
+                              </div>
+                            </div>
                           </div>
-                          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-sm text-muted-foreground">
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4" />
-                              <span>{appointment.user_name}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-4 h-4" />
-                              <span>{format(new Date(appointment.date_time), 'd MMM yyyy', { locale: it })}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-4 h-4" />
-                              <span>{format(new Date(appointment.date_time), 'HH:mm')}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <User className="w-4 h-4" />
-                              <span>{appointment.hairdresser_name}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {appointment.status === 'pending' && (
+                          <div className="flex flex-wrap gap-2">
                             <Button
                               onClick={() => {
                                 setActioningId(appointment.id);
@@ -370,45 +373,45 @@ const AdminAppointments = () => {
                               <Check className="w-4 h-4 mr-1" />
                               Conferma
                             </Button>
-                          )}
-                          <Button
-                            onClick={() => openRescheduleModal(appointment)}
-                            variant="outline"
-                            className="border-brand-charcoal text-brand-charcoal hover:bg-brand-sand/30 rounded-none px-4 py-2"
-                            data-testid={`reschedule-button-${appointment.id}`}
-                          >
-                            <CalendarClock className="w-4 h-4 mr-1" />
-                            Sposta
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setActioningId(appointment.id);
-                              setActionType('cancel');
-                            }}
-                            variant="outline"
-                            className="border-orange-500 text-orange-500 hover:bg-orange-50 rounded-none px-4 py-2"
-                            data-testid={`cancel-button-${appointment.id}`}
-                          >
-                            <X className="w-4 h-4 mr-1" />
-                            Annulla
-                          </Button>
-                          <Button
-                            onClick={() => {
-                              setActioningId(appointment.id);
-                              setActionType('delete');
-                            }}
-                            variant="outline"
-                            className="border-red-600 text-red-600 hover:bg-red-50 rounded-none px-4 py-2"
-                            data-testid={`delete-button-${appointment.id}`}
-                          >
-                            <Trash2 className="w-4 h-4 mr-1" />
-                            Elimina
-                          </Button>
+                            <Button
+                              onClick={() => openRescheduleModal(appointment)}
+                              variant="outline"
+                              className="border-brand-charcoal text-brand-charcoal hover:bg-brand-sand/30 rounded-none px-4 py-2"
+                              data-testid={`reschedule-button-${appointment.id}`}
+                            >
+                              <CalendarClock className="w-4 h-4 mr-1" />
+                              Sposta
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setActioningId(appointment.id);
+                                setActionType('cancel');
+                              }}
+                              variant="outline"
+                              className="border-orange-500 text-orange-500 hover:bg-orange-50 rounded-none px-4 py-2"
+                              data-testid={`cancel-button-${appointment.id}`}
+                            >
+                              <X className="w-4 h-4 mr-1" />
+                              Annulla
+                            </Button>
+                            <Button
+                              onClick={() => {
+                                setActioningId(appointment.id);
+                                setActionType('delete');
+                              }}
+                              variant="outline"
+                              className="border-red-600 text-red-600 hover:bg-red-50 rounded-none px-4 py-2"
+                              data-testid={`delete-button-${appointment.id}`}
+                            >
+                              <Trash2 className="w-4 h-4 mr-1" />
+                              Elimina
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </Card>
-                  </motion.div>
-                ))}
+                      </Card>
+                    </motion.div>
+                  ))}
+              </div>
             </div>
           )}
 
