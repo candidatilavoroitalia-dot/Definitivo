@@ -318,7 +318,7 @@ const AdminAppointments = () => {
           )}
           
           {/* All Filtered Appointments */}
-          {filteredAppointments.length > 0 ? (
+          {filteredAppointments.length > 0 && (
             <div className="space-y-4">
               {filteredAppointments
                 .sort((a, b) => new Date(a.date_time) - new Date(b.date_time))
@@ -407,9 +407,8 @@ const AdminAppointments = () => {
                     </Card>
                   </motion.div>
                 ))}
-              </div>
             </div>
-          ) : null}
+          )}
 
           {/* Confirmed Appointments */}
           {groupedAppointments.confirmed.length > 0 && (
