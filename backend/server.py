@@ -1042,6 +1042,29 @@ async def update_settings(update_data: SettingsUpdate, current_user: dict = Depe
             settings.update(update_dict)
         return Settings(**settings)
 
+# Closures (giorni di chiusura) endpoints
+@api_router.get("/closures")
+async def get_closures():
+    closures = await db.closures.find({}, {"_id": 0}).to_list(1000)
+    return closures
+
+@api_router.post("/admin/closures", response_model=Closure)
+async def create_closure(closure_data: ClosureCreate, current_user: dict = Depends(get_admin_user)):
+    closure_doc = {
+        "id": str(uuid.uuid4()),
+        "date": closure_data.date,
+        "reason": closure_data.reason
+    }
+    await db.closures.insert_one(closure_doc)
+    return Closure(**closure_doc)
+
+@api_router.delete("/admin/closures/{closure_id}")
+async def delete_closure(closure_id: str, current_user: dict = Depends(get_admin_user)):
+    result = await db.closures.delete_one({"id": closure_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Closure not found")
+    return {"message": "Chiusura eliminata"}
+
 # Seed data endpoint (for development)
 @api_router.post("/seed")
 async def seed_data():
