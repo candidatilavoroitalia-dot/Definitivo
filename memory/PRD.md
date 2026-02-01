@@ -73,8 +73,8 @@ PUT /api/admin/settings - Aggiorna impostazioni (admin)
 ```
 
 ## Credenziali Test
-- **Admin:** admin@parrucco.it / adminpassword
-- **Cliente test:** cliente@test.com / test123456
+- **Admin:** admin@parrucco.it / adminpassword (verificato ✅)
+- **Cliente test:** Da creare tramite registrazione
 
 ## Stato: COMPLETATO ✅
 Data ultimo aggiornamento: 1 Febbraio 2026
