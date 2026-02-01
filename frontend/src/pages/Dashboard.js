@@ -45,9 +45,11 @@ const Dashboard = ({ user, logout }) => {
   const fetchAppointments = async () => {
     try {
       const response = await axios.get('/appointments/my');
-      setAppointments(response.data);
+      setAppointments(response.data || []);
     } catch (error) {
+      console.error('Error fetching appointments:', error);
       toast.error('Errore nel caricamento degli appuntamenti');
+      setAppointments([]);
     } finally {
       setLoading(false);
     }
