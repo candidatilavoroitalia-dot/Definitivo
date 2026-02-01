@@ -89,9 +89,9 @@ function App() {
           >
             <Route index element={<AdminAppointments />} />
             <Route path="nuovo" element={<ManualBooking />} />
-            <Route path="services" element={<AdminServices />} />
-            <Route path="hairdressers" element={<AdminHairdressers />} />
-            <Route path="settings" element={<AdminSettings />} />
+            <Route path="servizi" element={<AdminServices />} />
+            <Route path="parrucchieri" element={<AdminHairdressers />} />
+            <Route path="impostazioni" element={<AdminSettings />} />
           </Route>
         </Routes>
       </BrowserRouter>
