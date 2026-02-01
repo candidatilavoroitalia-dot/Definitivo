@@ -181,7 +181,7 @@ const AdminAppointments = () => {
   };
 
   // Statistiche escludendo cancellati
-184|  const activeAppointments = appointments.filter(apt => apt.status !== 'cancelled');
+  const activeAppointments = appointments.filter(apt => apt.status !== 'cancelled');
   
   // Applica filtri ai gruppi
   const getFilteredByGroup = (status) => {
