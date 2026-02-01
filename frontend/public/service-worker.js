@@ -110,8 +110,18 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Skip API requests - always fetch fresh
+  // Skip API requests - always fetch fresh from network
   if (event.request.url.includes('/api/')) {
+    return;
+  }
+
+  // Skip navigation requests - always fetch fresh
+  if (event.request.mode === 'navigate') {
+    return;
+  }
+
+  // Only cache static assets
+  if (!event.request.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)) {
     return;
   }
 
