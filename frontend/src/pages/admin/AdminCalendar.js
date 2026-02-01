@@ -297,7 +297,7 @@ const AdminCalendar = () => {
 
                 if (isClosed) {
                   return (
-                    <div key={i} className="p-1 bg-red-100 rounded min-h-[50px]" />
+                    <div key={i} className="p-1 bg-red-100 rounded min-h-[60px] min-w-[120px]" />
                   );
                 }
 
