@@ -295,7 +295,7 @@ const AdminAppointments = () => {
             Totale
           </div>
           <div className="text-4xl font-playfair font-bold text-brand-charcoal">
-            {activeAppointments.length}
+            {totalStats.total}
           </div>
         </Card>
         <Card className="p-6 border-yellow-300 bg-yellow-50">
@@ -303,7 +303,7 @@ const AdminAppointments = () => {
             In Attesa
           </div>
           <div className="text-4xl font-playfair font-bold text-yellow-800">
-            {groupedAppointments.pending.length}
+            {totalStats.pending}
           </div>
         </Card>
         <Card className="p-6 border-green-300 bg-green-50">
@@ -311,7 +311,7 @@ const AdminAppointments = () => {
             Confermati
           </div>
           <div className="text-4xl font-playfair font-bold text-green-800">
-            {groupedAppointments.confirmed.length}
+            {totalStats.confirmed}
           </div>
         </Card>
       </div>
