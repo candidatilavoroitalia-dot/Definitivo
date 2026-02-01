@@ -305,15 +305,29 @@ const Dashboard = ({ user, logout }) => {
 
         {/* Quick Actions */}
         <div className="mb-12">
-          <Button
-            onClick={() => navigate('/book')}
-            size="lg"
-            className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
-            data-testid="new-appointment-button"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Nuovo Appuntamento
-          </Button>
+          {user.is_approved ? (
+            <Button
+              onClick={() => navigate('/book')}
+              size="lg"
+              className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 text-sm uppercase tracking-widest transition-all hover:scale-[1.02]"
+              data-testid="new-appointment-button"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Nuovo Appuntamento
+            </Button>
+          ) : (
+            <Card className="p-6 border-orange-300 bg-orange-50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-orange-200 flex items-center justify-center">
+                  <Clock className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-orange-800">Account in attesa di approvazione</h3>
+                  <p className="text-sm text-orange-700">Potrai prenotare appuntamenti dopo l'approvazione del tuo account.</p>
+                </div>
+              </div>
+            </Card>
+          )}
         </div>
 
         {loading ? (
