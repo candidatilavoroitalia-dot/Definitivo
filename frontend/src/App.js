@@ -35,6 +35,11 @@ function App() {
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
+        // Assicura che is_approved sia definito (per utenti vecchi)
+        if (parsedUser.is_approved === undefined) {
+          parsedUser.is_approved = true; // Default per utenti esistenti
+          localStorage.setItem('user', JSON.stringify(parsedUser));
+        }
         setUser(parsedUser);
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       } catch (error) {
