@@ -157,12 +157,18 @@ const Dashboard = ({ user, logout }) => {
     }
   };
 
-  const upcomingAppointments = appointments.filter(
-    (apt) => apt.status !== 'cancelled' && new Date(apt.date_time) > new Date()
-  );
-  const pastAppointments = appointments.filter(
-    (apt) => apt.status === 'cancelled' || new Date(apt.date_time) <= new Date()
-  );
+  const upcomingAppointments = appointments
+    .filter((apt) => apt.status !== 'cancelled' && new Date(apt.date_time) > new Date())
+    .sort((a, b) => {
+      // Prima i pending, poi confirmed
+      if (a.status === 'pending' && b.status !== 'pending') return -1;
+      if (a.status !== 'pending' && b.status === 'pending') return 1;
+      // Poi ordina per data
+      return new Date(a.date_time) - new Date(b.date_time);
+    });
+  const pastAppointments = appointments
+    .filter((apt) => apt.status === 'cancelled' || new Date(apt.date_time) <= new Date())
+    .sort((a, b) => new Date(b.date_time) - new Date(a.date_time));
 
   const StatusBadge = ({ status }) => {
     const colors = {
