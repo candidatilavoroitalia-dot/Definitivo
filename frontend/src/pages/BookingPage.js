@@ -229,9 +229,11 @@ const BookingPage = ({ user, logout }) => {
                   <h3 className="text-lg font-playfair font-semibold text-brand-charcoal">
                     {hairdresser.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Specialità: {hairdresser.specialties.join(', ')}
-                  </p>
+                  {hairdresser.specialties && hairdresser.specialties.length > 0 && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Specialità: {hairdresser.specialties.join(', ')}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
