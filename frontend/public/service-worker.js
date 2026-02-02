@@ -1,41 +1,33 @@
-const CACHE_NAME = 'parrucco-v22';
+const CACHE_NAME = 'parrucco-v30';
 const urlsToCache = [
   '/',
-  '/static/css/main.css',
-  '/static/js/main.js',
   '/manifest.json'
 ];
 
-// Install event - cache assets
+// Install event - cache assets and force activation
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache.map(url => new Request(url, {cache: 'reload'})));
-      })
-      .catch((err) => {
-        console.log('Cache installation failed:', err);
-      })
-  );
-  self.skipWaiting();
+  console.log('Service Worker installing, version: parrucco-v30');
+  self.skipWaiting(); // Force immediate activation
 });
 
-// Activate event - clean old caches
+// Activate event - clean ALL old caches
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
+  console.log('Service Worker activating, cleaning old caches');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
+          // Delete ALL caches except current
+          if (cacheName !== CACHE_NAME) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim(); // Take control immediately
     })
   );
-  self.clients.claim();
 });
 
 // Push notification event - HANDLE INCOMING NOTIFICATIONS
