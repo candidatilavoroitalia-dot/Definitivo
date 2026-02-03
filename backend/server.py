@@ -700,16 +700,6 @@ async def find_first_available(request: FirstAvailableRequest):
                 )
     
     return FirstAvailableResponse(found=False)
-                available = [s for s in available if s > current_time]
-            
-            if available:
-                return FirstAvailableResponse(
-                    found=True,
-                    date=date_str,
-                    time=available[0]
-                )
-    
-    return FirstAvailableResponse(found=False)
 
 # Endpoint per ottenere lo stato dei giorni (liberi/occupati)
 class DaysStatusRequest(BaseModel):
@@ -729,7 +719,6 @@ async def get_days_status(request: DaysStatusRequest):
     if not settings:
         settings = {
             "working_days": [1, 2, 3, 4, 5, 6],
-            "time_slots": ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"]
         }
     
     working_days = settings.get("working_days", [1, 2, 3, 4, 5, 6])
@@ -744,39 +733,39 @@ async def get_days_status(request: DaysStatusRequest):
     closure_dates = set(c["date"] for c in closures)
     
     results = []
-    current = start
+    current_date = start
     today = datetime.now(timezone.utc).date()
     
-    while current <= end:
-        date_str = current.isoformat()
+    while current_date <= end:
+        date_str = current_date.isoformat()
         
         # Weekday check
-        weekday = current.weekday() + 1
+        weekday = current_date.weekday() + 1
         if weekday == 7:
             weekday = 0
         
         if weekday not in working_days or date_str in closure_dates:
             results.append(DayStatus(date=date_str, status="closed"))
-        elif current < today:
+        elif current_date < today:
             results.append(DayStatus(date=date_str, status="closed"))
         else:
-            # Controlla disponibilità
-            avail_request = AvailabilityRequest(
-                date=date_str,
-                service_id=request.service_id,
-                hairdresser_id=request.hairdresser_id
-            )
-            avail_response = await get_availability(avail_request)
+            # Usa la funzione helper per calcolare disponibilità
+            available_slots = await calculate_availability(date_str, request.service_id, request.hairdresser_id)
             
-            available = avail_response.available_slots
             # Filtra slot passati se è oggi
-            if current == today:
+            if current_date == today:
                 now = datetime.now(timezone.utc)
                 current_time = now.strftime("%H:%M")
-                available = [s for s in available if s > current_time]
+                available_slots = [s for s in available_slots if s > current_time]
             
-            if available:
+            if available_slots:
                 results.append(DayStatus(date=date_str, status="available"))
+            else:
+                results.append(DayStatus(date=date_str, status="full"))
+        
+        current_date += timedelta(days=1)
+    
+    return results
             else:
                 results.append(DayStatus(date=date_str, status="full"))
         
