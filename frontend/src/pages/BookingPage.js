@@ -7,7 +7,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Calendar } from '../components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { format, addMonths } from 'date-fns';
+import { format, addMonths, addWeeks } from 'date-fns';
 import { it } from 'date-fns/locale';
 
 const BookingPage = ({ user, logout }) => {
