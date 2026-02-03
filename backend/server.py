@@ -50,6 +50,35 @@ async def notification_scheduler():
             logging.error(f"Notification scheduler error: {e}")
         await asyncio.sleep(60)  # Check every minute
 
+# Cleanup scheduler task - eliminates old appointments
+async def cleanup_scheduler():
+    """Background task that deletes old appointments (past > 1 week)"""
+    while True:
+        try:
+            await cleanup_old_appointments()
+        except Exception as e:
+            logging.error(f"Cleanup scheduler error: {e}")
+        await asyncio.sleep(3600)  # Check every hour
+
+async def cleanup_old_appointments():
+    """Delete appointments older than 1 week"""
+    one_week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    
+    # Delete past appointments older than 1 week
+    result = await db.appointments.delete_many({
+        "date_time": {"$lt": one_week_ago.isoformat()},
+        "status": {"$in": ["pending", "confirmed"]}  # Only past appointments, not cancelled (already deleted)
+    })
+    
+    if result.deleted_count > 0:
+        logging.info(f"Cleanup: Deleted {result.deleted_count} old appointments (> 1 week)")
+    
+    # Also clean up old sent_notifications entries (older than 30 days)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    await db.sent_notifications.delete_many({
+        "sent_at": {"$lt": thirty_days_ago.isoformat()}
+    })
+
 async def check_and_send_notifications():
     """Check upcoming appointments and send notifications based on user preferences"""
     now = datetime.now(timezone.utc)
@@ -168,9 +197,18 @@ async def lifespan(app: FastAPI):
     # Start notification scheduler
     scheduler_task = asyncio.create_task(notification_scheduler())
     logging.info("Notification scheduler started")
+    
+    # Start cleanup scheduler
+    cleanup_task = asyncio.create_task(cleanup_scheduler())
+    logging.info("Cleanup scheduler started")
+    
+    # Run initial cleanup on startup
+    await cleanup_old_appointments()
+    
     yield
     # Cleanup
     scheduler_task.cancel()
+    cleanup_task.cancel()
     client.close()
 
 app = FastAPI(lifespan=lifespan)
