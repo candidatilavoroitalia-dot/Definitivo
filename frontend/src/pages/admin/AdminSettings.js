@@ -253,6 +253,79 @@ const AdminSettings = () => {
           </div>
         </Card>
 
+        {/* Calendar Booking Limit */}
+        <Card className="p-8 border-brand-sand/30">
+          <div className="flex items-center gap-3 mb-6">
+            <Calendar className="w-6 h-6 text-brand-gold" />
+            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">Apertura Calendario Prenotazioni</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-6">
+            Scegli per quanto tempo in anticipo i clienti possono prenotare appuntamenti
+          </p>
+          
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, calendar_limit_type: 'always', calendar_limit_value: 0 })}
+                className={`p-4 border-2 rounded-lg text-center transition-all ${
+                  formData.calendar_limit_type === 'always'
+                    ? 'border-green-500 bg-green-50 text-green-800'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-lg">Sempre Aperto</div>
+                <div className="text-sm text-muted-foreground">Prenotazioni senza limiti</div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, calendar_limit_type: 'weeks', calendar_limit_value: formData.calendar_limit_value || 2 })}
+                className={`p-4 border-2 rounded-lg text-center transition-all ${
+                  formData.calendar_limit_type === 'weeks'
+                    ? 'border-blue-500 bg-blue-50 text-blue-800'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-lg">Settimane</div>
+                <div className="text-sm text-muted-foreground">Limita a X settimane</div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, calendar_limit_type: 'months', calendar_limit_value: formData.calendar_limit_value || 1 })}
+                className={`p-4 border-2 rounded-lg text-center transition-all ${
+                  formData.calendar_limit_type === 'months'
+                    ? 'border-purple-500 bg-purple-50 text-purple-800'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-lg">Mesi</div>
+                <div className="text-sm text-muted-foreground">Limita a X mesi</div>
+              </button>
+            </div>
+            
+            {formData.calendar_limit_type !== 'always' && (
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                <label className="font-medium">
+                  {formData.calendar_limit_type === 'weeks' ? 'Numero di settimane:' : 'Numero di mesi:'}
+                </label>
+                <Input
+                  type="number"
+                  min="1"
+                  max={formData.calendar_limit_type === 'weeks' ? 52 : 12}
+                  value={formData.calendar_limit_value}
+                  onChange={(e) => setFormData({ ...formData, calendar_limit_value: parseInt(e.target.value) || 1 })}
+                  className="w-24"
+                />
+                <span className="text-sm text-muted-foreground">
+                  I clienti potranno prenotare fino a {formData.calendar_limit_value} {formData.calendar_limit_type === 'weeks' ? 'settimane' : 'mesi'} in anticipo
+                </span>
+              </div>
+            )}
+          </div>
+        </Card>
+
         <div className="flex justify-end">
           <Button 
             type="submit" 
