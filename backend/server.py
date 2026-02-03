@@ -234,6 +234,9 @@ class Settings(BaseModel):
     working_days: List[int]  # 0=Sunday, 1=Monday, etc.
     opening_time: str  # "09:00"
     closing_time: str  # "19:00"
+    # Apertura calendario
+    calendar_limit_type: str = "always"  # "always", "weeks", "months"
+    calendar_limit_value: int = 0  # numero di settimane/mesi
 
 class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
@@ -245,6 +248,8 @@ class SettingsUpdate(BaseModel):
     working_days: Optional[List[int]] = None
     opening_time: Optional[str] = None
     closing_time: Optional[str] = None
+    calendar_limit_type: Optional[str] = None
+    calendar_limit_value: Optional[int] = None
 
 class AvailabilityRequest(BaseModel):
     date: str  # YYYY-MM-DD
