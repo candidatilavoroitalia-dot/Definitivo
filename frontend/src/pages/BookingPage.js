@@ -80,12 +80,90 @@ const BookingPage = ({ user, logout }) => {
     }
   };
 
+  // Carica lo stato dei giorni (liberi/occupati/chiusi)
+  const fetchDaysStatus = async () => {
+    if (!selectedService || !selectedHairdresser) return;
+    
+    try {
+      const today = new Date();
+      const endDate = addMonths(today, 2);
+      
+      const response = await axios.post('/availability/days-status', {
+        service_id: selectedService.id,
+        hairdresser_id: selectedHairdresser.id,
+        start_date: format(today, 'yyyy-MM-dd'),
+        end_date: format(endDate, 'yyyy-MM-dd')
+      });
+      
+      const statusMap = {};
+      response.data.forEach(day => {
+        statusMap[day.date] = day.status;
+      });
+      setDaysStatus(statusMap);
+    } catch (error) {
+      console.error('Error fetching days status:', error);
+    }
+  };
+
+  // Cerca il primo appuntamento libero
+  const findFirstAvailable = async () => {
+    if (!selectedService || !selectedHairdresser) {
+      toast.error('Seleziona prima servizio e parrucchiere');
+      return;
+    }
+    
+    setSearchingFirst(true);
+    try {
+      const response = await axios.post('/availability/first', {
+        service_id: selectedService.id,
+        hairdresser_id: selectedHairdresser.id,
+        days_to_search: 60
+      });
+      
+      if (response.data.found) {
+        const foundDate = new Date(response.data.date + 'T00:00:00');
+        setSelectedDate(foundDate);
+        setSelectedTime(response.data.time);
+        toast.success(`Trovato! ${format(foundDate, 'd MMMM yyyy', { locale: it })} alle ${response.data.time}`);
+      } else {
+        toast.error('Nessun appuntamento disponibile nei prossimi 60 giorni');
+      }
+    } catch (error) {
+      toast.error('Errore nella ricerca');
+    } finally {
+      setSearchingFirst(false);
+    }
+  };
+
+  // Carica lo stato dei giorni quando si arriva allo step 3
+  useEffect(() => {
+    if (step === 3 && selectedService && selectedHairdresser) {
+      fetchDaysStatus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, selectedService, selectedHairdresser]);
+
   const isDateDisabled = (date) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
     const dayOfWeek = date.getDay();
     return !workingDays.includes(dayOfWeek);
+  };
+
+  // Funzione per determinare il colore del giorno nel calendario
+  const getDayClassName = (date) => {
+    const dateStr = format(date, 'yyyy-MM-dd');
+    const status = daysStatus[dateStr];
+    
+    if (status === 'available') {
+      return 'bg-green-100 text-green-800 hover:bg-green-200';
+    } else if (status === 'full') {
+      return 'bg-red-100 text-red-800 hover:bg-red-200';
+    } else if (status === 'closed') {
+      return 'bg-gray-100 text-gray-400';
+    }
+    return '';
   };
 
   const handleSubmit = async () => {
