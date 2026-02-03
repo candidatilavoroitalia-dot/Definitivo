@@ -95,39 +95,16 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - NO CACHING, always fetch from network
 self.addEventListener('fetch', (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
-  // Skip API requests - always fetch fresh from network
-  if (event.request.url.includes('/api/')) {
-    return;
-  }
-
-  // Skip navigation requests - always fetch fresh
-  if (event.request.mode === 'navigate') {
-    return;
-  }
-
-  // Only cache static assets
-  if (!event.request.url.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2)$/)) {
-    return;
-  }
-
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(
-          (response) => {
-            // Check if valid response
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+  // Always fetch from network - no caching
+  return;
+});
               return response;
             }
 
