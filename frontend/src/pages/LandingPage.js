@@ -368,7 +368,7 @@ const LandingPage = ({ user, logout }) => {
       <footer className="py-12 px-6 md:px-12 bg-white border-t border-brand-sand/20">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; 2026 parrucco.. Tutti i diritti riservati.
+            &copy; 2026 {settings?.salon_name || ''} Tutti i diritti riservati.
           </p>
         </div>
       </footer>
