@@ -77,9 +77,17 @@ PUT /api/admin/settings - Aggiorna impostazioni (admin)
 - **Cliente test:** Da creare tramite registrazione
 
 ## Stato: COMPLETATO ✅
-Data ultimo aggiornamento: 1 Febbraio 2026
+Data ultimo aggiornamento: 3 Febbraio 2026
 
-## Modifiche Recenti (1 Feb 2026)
+## Modifiche Recenti (3 Feb 2026)
+- [x] **NUOVA FUNZIONALITÀ**: Pulizia automatica del database appuntamenti
+  - Appuntamenti cancellati: eliminati immediatamente dal database (non più status "cancelled")
+  - Appuntamenti passati: eliminati automaticamente dopo 1 settimana
+- [x] **Cleanup Scheduler**: Task in background che esegue la pulizia ogni ora
+- [x] Modificato endpoint `PATCH /api/appointments/{id}/cancel` per eliminare invece di aggiornare status
+- [x] Password admin resettata a "admin123"
+
+## Modifiche Precedenti (1 Feb 2026)
 - [x] **NUOVA FUNZIONALITÀ**: Impostazioni notifiche appuntamenti nella dashboard cliente
 - [x] Opzioni: 10 min, 30 min, 1 ora, 2 ore, 1 giorno prima (selezionabili multiple)
 - [x] Nuovi endpoint API: GET/PUT /api/user/notification-preferences
