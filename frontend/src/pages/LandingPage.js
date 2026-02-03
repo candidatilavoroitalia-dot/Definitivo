@@ -67,7 +67,7 @@ const LandingPage = ({ user, logout }) => {
             animate={{ opacity: 1, x: 0 }}
             className="text-2xl font-playfair font-bold text-brand-charcoal"
           >
-            {settings?.salon_name || 'Il tuo salone'}
+            {settings?.salon_name || <span className="bg-gray-200 animate-pulse rounded w-32 h-6 inline-block"></span>}
           </motion.div>
           <div className="flex gap-4 items-center">
             {!isInstalled && (
