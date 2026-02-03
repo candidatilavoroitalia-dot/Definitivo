@@ -12,17 +12,11 @@ const AdminSettings = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
+    salon_name: 'parrucco..',
     hero_title: '',
     hero_subtitle: '',
     hero_description: '',
     hero_image_url: '',
-    working_days: [1, 2, 3, 4, 5, 6],
-    opening_time: '09:00',
-    closing_time: '19:00',
-    time_slots: [],
-    calendar_limit_type: 'always',
-    calendar_limit_value: 0,
-    salon_name: 'parrucco..',
     feature1_title: 'Prenota Online',
     feature1_desc: 'Scegli data e ora per il tuo appuntamento',
     feature2_title: 'Scegli il Parrucchiere',
@@ -34,31 +28,36 @@ const AdminSettings = () => {
     cta_title: 'Pronto a Trasformare il Tuo Look?',
     cta_subtitle: 'Registrati ora e prenota il tuo primo appuntamento',
     app_section_title: "Scarica l'App sul Tuo Telefono",
-    app_section_desc: 'Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!'
+    app_section_desc: 'Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!',
+    working_days: [1, 2, 3, 4, 5, 6],
+    opening_time: '09:00',
+    closing_time: '19:00',
+    time_slots: [],
+    calendar_limit_type: 'always',
+    calendar_limit_value: 0
   });
   const [newSlot, setNewSlot] = useState('');
 
   const suggestedImages = [
-    { url: 'https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', label: 'Salone Moderno' },
-    { url: 'https://images.pexels.com/photos/1319460/pexels-photo-1319460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Forbici Professionali' },
-    { url: 'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Salone Elegante' },
+    { url: 'https://images.pexels.com/photos/7195799/pexels-photo-7195799.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940', label: 'Salone Elegante' },
+    { url: 'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Taglio Professionale' },
+    { url: 'https://images.pexels.com/photos/3992874/pexels-photo-3992874.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Styling Moderno' },
     { url: 'https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750', label: 'Salone Vintage' },
   ];
 
   useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get('/settings');
+        setFormData(prev => ({ ...prev, ...response.data }));
+      } catch (error) {
+        toast.error('Errore nel caricamento delle impostazioni');
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchSettings();
   }, []);
-
-  const fetchSettings = async () => {
-    try {
-      const response = await axios.get('/settings');
-      setFormData(response.data);
-    } catch (error) {
-      toast.error('Errore nel caricamento');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -91,9 +90,25 @@ const AdminSettings = () => {
       <h2 className="text-3xl font-playfair font-semibold text-brand-charcoal">Impostazioni Generali</h2>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Hero Section Settings */}
+        
+        {/* 1. NOME SALONE (Header) */}
         <Card className="p-8 border-brand-sand/30">
-          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Testi Home Page</h3>
+          <div className="flex items-center gap-3 mb-6">
+            <Type className="w-6 h-6 text-brand-gold" />
+            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">1. Nome del Salone</h3>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">Appare nell'header del sito</p>
+          <Input
+            value={formData.salon_name}
+            onChange={(e) => setFormData({ ...formData, salon_name: e.target.value })}
+            className="text-lg"
+            placeholder="es. Il Mio Salone"
+          />
+        </Card>
+
+        {/* 2. HERO SECTION */}
+        <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">2. Sezione Hero (Principale)</h3>
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-medium tracking-widest uppercase mb-2">Titolo Principale</Label>
@@ -122,7 +137,7 @@ const AdminSettings = () => {
               />
             </div>
             <div>
-              <Label className="text-sm font-medium tracking-widest uppercase mb-2">URL Immagine Hero</Label>
+              <Label className="text-sm font-medium tracking-widest uppercase mb-2">Immagine Hero</Label>
               <Input 
                 type="url"
                 value={formData.hero_image_url} 
@@ -130,10 +145,8 @@ const AdminSettings = () => {
                 placeholder="https://images.pexels.com/photos/..."
                 className="mb-3"
               />
-              
-              {/* Suggested Images */}
               <div className="mb-3">
-                <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Immagini Suggerite:</p>
+                <p className="text-xs text-muted-foreground mb-2">Immagini Suggerite:</p>
                 <div className="flex flex-wrap gap-2">
                   {suggestedImages.map((img, idx) => (
                     <button
@@ -147,17 +160,14 @@ const AdminSettings = () => {
                   ))}
                 </div>
               </div>
-              
               {formData.hero_image_url && (
                 <div className="mt-3 border border-brand-sand/30 p-4">
-                  <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wide">Anteprima:</p>
+                  <p className="text-xs text-muted-foreground mb-2">Anteprima:</p>
                   <img 
                     src={formData.hero_image_url} 
                     alt="Hero preview" 
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      e.target.src = 'https://placehold.co/600x400/F9F9F7/1A1A1A?text=Immagine+non+disponibile';
-                    }}
+                    onError={(e) => { e.target.src = 'https://placehold.co/600x400/F9F9F7/1A1A1A?text=Immagine+non+disponibile'; }}
                   />
                 </div>
               )}
@@ -165,16 +175,123 @@ const AdminSettings = () => {
           </div>
         </Card>
 
-        {/* Working Days and Hours Settings */}
+        {/* 3. FEATURES - Perché Scegliere Noi */}
         <Card className="p-8 border-brand-sand/30">
-          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Giorni e Orari Lavorativi</h3>
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">3. Sezione "Perché Scegliere Noi"</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+              <Label className="font-semibold">Feature 1</Label>
+              <Input
+                value={formData.feature1_title}
+                onChange={(e) => setFormData({ ...formData, feature1_title: e.target.value })}
+                placeholder="Titolo"
+              />
+              <Input
+                value={formData.feature1_desc}
+                onChange={(e) => setFormData({ ...formData, feature1_desc: e.target.value })}
+                placeholder="Descrizione"
+              />
+            </div>
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+              <Label className="font-semibold">Feature 2</Label>
+              <Input
+                value={formData.feature2_title}
+                onChange={(e) => setFormData({ ...formData, feature2_title: e.target.value })}
+                placeholder="Titolo"
+              />
+              <Input
+                value={formData.feature2_desc}
+                onChange={(e) => setFormData({ ...formData, feature2_desc: e.target.value })}
+                placeholder="Descrizione"
+              />
+            </div>
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+              <Label className="font-semibold">Feature 3</Label>
+              <Input
+                value={formData.feature3_title}
+                onChange={(e) => setFormData({ ...formData, feature3_title: e.target.value })}
+                placeholder="Titolo"
+              />
+              <Input
+                value={formData.feature3_desc}
+                onChange={(e) => setFormData({ ...formData, feature3_desc: e.target.value })}
+                placeholder="Descrizione"
+              />
+            </div>
+            <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+              <Label className="font-semibold">Feature 4</Label>
+              <Input
+                value={formData.feature4_title}
+                onChange={(e) => setFormData({ ...formData, feature4_title: e.target.value })}
+                placeholder="Titolo"
+              />
+              <Input
+                value={formData.feature4_desc}
+                onChange={(e) => setFormData({ ...formData, feature4_desc: e.target.value })}
+                placeholder="Descrizione"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* 4. CTA - Call to Action */}
+        <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">4. Sezione Call to Action</h3>
+          <div className="space-y-4">
+            <div>
+              <Label>Titolo CTA</Label>
+              <Input
+                value={formData.cta_title}
+                onChange={(e) => setFormData({ ...formData, cta_title: e.target.value })}
+                className="mt-2"
+                placeholder="Pronto a Trasformare il Tuo Look?"
+              />
+            </div>
+            <div>
+              <Label>Sottotitolo CTA</Label>
+              <Input
+                value={formData.cta_subtitle}
+                onChange={(e) => setFormData({ ...formData, cta_subtitle: e.target.value })}
+                className="mt-2"
+                placeholder="Registrati ora e prenota il tuo primo appuntamento"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* 5. APP SECTION - Download App */}
+        <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">5. Sezione Download App</h3>
+          <div className="space-y-4">
+            <div>
+              <Label>Titolo</Label>
+              <Input
+                value={formData.app_section_title}
+                onChange={(e) => setFormData({ ...formData, app_section_title: e.target.value })}
+                className="mt-2"
+                placeholder="Scarica l'App sul Tuo Telefono"
+              />
+            </div>
+            <div>
+              <Label>Descrizione</Label>
+              <Textarea
+                value={formData.app_section_desc}
+                onChange={(e) => setFormData({ ...formData, app_section_desc: e.target.value })}
+                className="mt-2"
+                rows={2}
+                placeholder="Installa l'app sul tuo dispositivo..."
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* 6. GIORNI E ORARI LAVORATIVI */}
+        <Card className="p-8 border-brand-sand/30">
+          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">6. Giorni e Orari Lavorativi</h3>
           
           <div className="space-y-6">
-            {/* Working Days */}
             <div>
-              <label className="text-sm font-medium tracking-widest uppercase mb-3 block">
-                Giorni Lavorativi
-              </label>
+              <label className="text-sm font-medium tracking-widest uppercase mb-3 block">Giorni Lavorativi</label>
               <div className="grid grid-cols-7 gap-2">
                 {['Dom', 'Lun', 'Mar', 'Mer', 'Gio', 'Ven', 'Sab'].map((day, index) => (
                   <button
@@ -183,220 +300,61 @@ const AdminSettings = () => {
                     onClick={() => {
                       const newDays = formData.working_days.includes(index)
                         ? formData.working_days.filter(d => d !== index)
-                        : [...formData.working_days, index].sort((a, b) => a - b);
+                        : [...formData.working_days, index];
                       setFormData({ ...formData, working_days: newDays });
                     }}
-                    className={`py-3 text-sm font-medium transition-all ${
+                    className={`p-3 text-sm font-medium border transition-colors ${
                       formData.working_days.includes(index)
-                        ? 'bg-brand-charcoal text-white'
-                        : 'bg-brand-sand/30 text-brand-charcoal hover:bg-brand-sand'
+                        ? 'bg-brand-charcoal text-white border-brand-charcoal'
+                        : 'bg-white text-brand-charcoal border-brand-sand hover:border-brand-charcoal'
                     }`}
                   >
                     {day}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                I clienti potranno prenotare solo nei giorni selezionati
-              </p>
-            </div>
-
-            {/* Working Hours */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
-                  Apertura
-                </label>
-                <Input
-                  type="time"
-                  value={formData.opening_time}
-                  onChange={(e) => setFormData({ ...formData, opening_time: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium tracking-widest uppercase mb-2 block">
-                  Chiusura
-                </label>
-                <Input
-                  type="time"
-                  value={formData.closing_time}
-                  onChange={(e) => setFormData({ ...formData, closing_time: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Time Slots Settings */}
-        <Card className="p-8 border-brand-sand/30">
-          <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal mb-6">Orari Disponibili</h3>
-          <div className="space-y-4">
-            <div className="flex gap-2">
-              <Input 
-                type="time"
-                value={newSlot}
-                onChange={(e) => setNewSlot(e.target.value)}
-                placeholder="09:00"
-                className="flex-1"
-              />
-              <Button type="button" onClick={addTimeSlot} className="bg-brand-charcoal text-white hover:bg-black rounded-none">
-                <Plus className="w-4 h-4 mr-2" />
-                Aggiungi
-              </Button>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mt-4">
-              {formData.time_slots.map((slot) => (
-                <div key={slot} className="flex items-center justify-between bg-brand-sand/30 px-3 py-2 border border-brand-sand">
-                  <span className="font-medium">{slot}</span>
-                  <button
-                    type="button"
-                    onClick={() => removeTimeSlot(slot)}
-                    className="text-red-600 hover:text-red-700 ml-2"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            
-            {formData.time_slots.length === 0 && (
-              <p className="text-sm text-muted-foreground italic">Nessun orario configurato. Aggiungi almeno un orario.</p>
-            )}
-          </div>
-        </Card>
-
-        {/* Branding e Testi Personalizzabili */}
-        <Card className="p-8 border-brand-sand/30">
-          <div className="flex items-center gap-3 mb-6">
-            <Type className="w-6 h-6 text-brand-gold" />
-            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">Nome Salone e Testi</h3>
-          </div>
-          
-          <div className="space-y-6">
-            {/* Nome Salone */}
             <div>
-              <Label className="text-lg font-semibold">Nome del Salone</Label>
-              <Input
-                value={formData.salon_name}
-                onChange={(e) => setFormData({ ...formData, salon_name: e.target.value })}
-                className="mt-2"
-                placeholder="es. Il Tuo Salone"
-              />
-            </div>
-
-            {/* Features */}
-            <div className="border-t pt-6">
-              <h4 className="font-semibold mb-4">Sezione "Perché Scegliere Noi"</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
-                  <Label>Titolo Feature 1</Label>
-                  <Input
-                    value={formData.feature1_title}
-                    onChange={(e) => setFormData({ ...formData, feature1_title: e.target.value })}
-                  />
-                  <Label>Descrizione</Label>
-                  <Input
-                    value={formData.feature1_desc}
-                    onChange={(e) => setFormData({ ...formData, feature1_desc: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
-                  <Label>Titolo Feature 2</Label>
-                  <Input
-                    value={formData.feature2_title}
-                    onChange={(e) => setFormData({ ...formData, feature2_title: e.target.value })}
-                  />
-                  <Label>Descrizione</Label>
-                  <Input
-                    value={formData.feature2_desc}
-                    onChange={(e) => setFormData({ ...formData, feature2_desc: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
-                  <Label>Titolo Feature 3</Label>
-                  <Input
-                    value={formData.feature3_title}
-                    onChange={(e) => setFormData({ ...formData, feature3_title: e.target.value })}
-                  />
-                  <Label>Descrizione</Label>
-                  <Input
-                    value={formData.feature3_desc}
-                    onChange={(e) => setFormData({ ...formData, feature3_desc: e.target.value })}
-                  />
-                </div>
-                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
-                  <Label>Titolo Feature 4</Label>
-                  <Input
-                    value={formData.feature4_title}
-                    onChange={(e) => setFormData({ ...formData, feature4_title: e.target.value })}
-                  />
-                  <Label>Descrizione</Label>
-                  <Input
-                    value={formData.feature4_desc}
-                    onChange={(e) => setFormData({ ...formData, feature4_desc: e.target.value })}
-                  />
-                </div>
+              <label className="text-sm font-medium tracking-widest uppercase mb-3 block">Orari Disponibili</label>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  type="time"
+                  value={newSlot}
+                  onChange={(e) => setNewSlot(e.target.value)}
+                  className="w-32"
+                />
+                <Button type="button" onClick={addTimeSlot} variant="outline" className="border-brand-charcoal">
+                  <Plus className="w-4 h-4 mr-1" /> Aggiungi
+                </Button>
               </div>
-            </div>
-
-            {/* CTA Section */}
-            <div className="border-t pt-6">
-              <h4 className="font-semibold mb-4">Sezione Call to Action</h4>
-              <div className="space-y-4">
-                <div>
-                  <Label>Titolo CTA</Label>
-                  <Input
-                    value={formData.cta_title}
-                    onChange={(e) => setFormData({ ...formData, cta_title: e.target.value })}
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label>Sottotitolo CTA</Label>
-                  <Input
-                    value={formData.cta_subtitle}
-                    onChange={(e) => setFormData({ ...formData, cta_subtitle: e.target.value })}
-                    className="mt-2"
-                  />
-                </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {formData.time_slots.sort().map((slot) => (
+                  <div key={slot} className="flex items-center gap-1 px-3 py-2 bg-brand-sand/30 border border-brand-sand">
+                    <span className="text-sm font-medium">{slot}</span>
+                    <button type="button" onClick={() => removeTimeSlot(slot)} className="text-red-500 hover:text-red-700">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            </div>
-
-            {/* App Section */}
-            <div className="border-t pt-6">
-              <h4 className="font-semibold mb-4">Sezione Download App</h4>
-              <div className="space-y-4">
-                <div>
-                  <Label>Titolo Sezione App</Label>
-                  <Input
-                    value={formData.app_section_title}
-                    onChange={(e) => setFormData({ ...formData, app_section_title: e.target.value })}
-                    className="mt-2"
-                  />
-                </div>
-                <div>
-                  <Label>Descrizione Sezione App</Label>
-                  <Textarea
-                    value={formData.app_section_desc}
-                    onChange={(e) => setFormData({ ...formData, app_section_desc: e.target.value })}
-                    className="mt-2"
-                    rows={2}
-                  />
-                </div>
-              </div>
+              
+              {formData.time_slots.length === 0 && (
+                <p className="text-sm text-muted-foreground italic">Nessun orario configurato.</p>
+              )}
             </div>
           </div>
         </Card>
 
-        {/* Calendar Booking Limit */}
+        {/* 7. APERTURA CALENDARIO */}
         <Card className="p-8 border-brand-sand/30">
           <div className="flex items-center gap-3 mb-6">
             <Calendar className="w-6 h-6 text-brand-gold" />
-            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">Apertura Calendario Prenotazioni</h3>
+            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">7. Apertura Calendario Prenotazioni</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-6">
-            Scegli per quanto tempo in anticipo i clienti possono prenotare appuntamenti
+            Scegli per quanto tempo in anticipo i clienti possono prenotare
           </p>
           
           <div className="space-y-4">
@@ -411,7 +369,7 @@ const AdminSettings = () => {
                 }`}
               >
                 <div className="font-semibold text-lg">Sempre Aperto</div>
-                <div className="text-sm text-muted-foreground">Prenotazioni senza limiti</div>
+                <div className="text-sm text-muted-foreground">Senza limiti</div>
               </button>
               
               <button
@@ -460,18 +418,19 @@ const AdminSettings = () => {
                   className="w-24"
                 />
                 <span className="text-sm text-muted-foreground">
-                  I clienti potranno prenotare fino a {formData.calendar_limit_value || 1} {formData.calendar_limit_type === 'weeks' ? 'settimane' : 'mesi'} in anticipo
+                  Prenotazioni fino a {formData.calendar_limit_value || 1} {formData.calendar_limit_type === 'weeks' ? 'settimane' : 'mesi'} in anticipo
                 </span>
               </div>
             )}
           </div>
         </Card>
 
+        {/* SAVE BUTTON */}
         <div className="flex justify-end">
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={saving}
-            className="bg-brand-gold text-brand-charcoal hover:bg-brand-gold-light rounded-none px-8 py-6 text-sm uppercase tracking-widest"
+            className="bg-brand-charcoal text-white hover:bg-black rounded-none px-8 py-6 uppercase tracking-widest"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Salvataggio...' : 'Salva Impostazioni'}
