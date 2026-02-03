@@ -1312,7 +1312,20 @@ async def get_settings():
             ],
             "admin_phone": "",
             "calendar_limit_type": "always",
-            "calendar_limit_value": 0
+            "calendar_limit_value": 0,
+            "salon_name": "parrucco..",
+            "feature1_title": "Prenota Online",
+            "feature1_desc": "Scegli data e ora per il tuo appuntamento",
+            "feature2_title": "Scegli il Parrucchiere",
+            "feature2_desc": "Prenota con il tuo parrucchiere preferito",
+            "feature3_title": "Promemoria Automatici",
+            "feature3_desc": "Ricevi notifiche prima del tuo appuntamento",
+            "feature4_title": "Gestione Facile",
+            "feature4_desc": "Modifica o cancella i tuoi appuntamenti",
+            "cta_title": "Pronto a Trasformare il Tuo Look?",
+            "cta_subtitle": "Registrati ora e prenota il tuo primo appuntamento",
+            "app_section_title": "Scarica l'App sul Tuo Telefono",
+            "app_section_desc": "Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!"
         }
         return Settings(**default_settings)
     
@@ -1321,6 +1334,32 @@ async def get_settings():
         settings["calendar_limit_type"] = "always"
     if "calendar_limit_value" not in settings:
         settings["calendar_limit_value"] = 0
+    if "salon_name" not in settings:
+        settings["salon_name"] = "parrucco.."
+    if "feature1_title" not in settings:
+        settings["feature1_title"] = "Prenota Online"
+    if "feature1_desc" not in settings:
+        settings["feature1_desc"] = "Scegli data e ora per il tuo appuntamento"
+    if "feature2_title" not in settings:
+        settings["feature2_title"] = "Scegli il Parrucchiere"
+    if "feature2_desc" not in settings:
+        settings["feature2_desc"] = "Prenota con il tuo parrucchiere preferito"
+    if "feature3_title" not in settings:
+        settings["feature3_title"] = "Promemoria Automatici"
+    if "feature3_desc" not in settings:
+        settings["feature3_desc"] = "Ricevi notifiche prima del tuo appuntamento"
+    if "feature4_title" not in settings:
+        settings["feature4_title"] = "Gestione Facile"
+    if "feature4_desc" not in settings:
+        settings["feature4_desc"] = "Modifica o cancella i tuoi appuntamenti"
+    if "cta_title" not in settings:
+        settings["cta_title"] = "Pronto a Trasformare il Tuo Look?"
+    if "cta_subtitle" not in settings:
+        settings["cta_subtitle"] = "Registrati ora e prenota il tuo primo appuntamento"
+    if "app_section_title" not in settings:
+        settings["app_section_title"] = "Scarica l'App sul Tuo Telefono"
+    if "app_section_desc" not in settings:
+        settings["app_section_desc"] = "Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!"
     
     # Ensure hero_image_url exists (for backward compatibility)
     if "hero_image_url" not in settings:
