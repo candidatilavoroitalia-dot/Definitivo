@@ -564,6 +564,149 @@ async def check_availability(request: AvailabilityRequest):
     
     return AvailabilityResponse(date=request.date, available_slots=available_slots)
 
+# Endpoint per trovare il primo appuntamento libero
+class FirstAvailableRequest(BaseModel):
+    service_id: str
+    hairdresser_id: str
+    days_to_search: int = 30  # Cerca nei prossimi 30 giorni
+
+class FirstAvailableResponse(BaseModel):
+    found: bool
+    date: Optional[str] = None
+    time: Optional[str] = None
+
+@api_router.post("/availability/first", response_model=FirstAvailableResponse)
+async def find_first_available(request: FirstAvailableRequest):
+    """Trova il primo slot disponibile per un servizio e parrucchiere"""
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if not settings:
+        settings = {
+            "working_days": [1, 2, 3, 4, 5, 6],
+            "time_slots": ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"]
+        }
+    
+    working_days = settings.get("working_days", [1, 2, 3, 4, 5, 6])
+    time_slots = settings.get("time_slots", [])
+    
+    # Cerca nei prossimi X giorni
+    today = datetime.now(timezone.utc).date()
+    
+    for day_offset in range(request.days_to_search):
+        check_date = today + timedelta(days=day_offset)
+        
+        # Salta se non è un giorno lavorativo
+        # In Python: Monday=0, Sunday=6. Aggiungiamo 1 per allineare con JS (Monday=1)
+        weekday = check_date.weekday() + 1
+        if weekday == 7:
+            weekday = 0  # Domenica = 0
+        if weekday not in working_days:
+            continue
+        
+        # Controlla se è un giorno di chiusura
+        closure = await db.closures.find_one({"date": check_date.isoformat()})
+        if closure:
+            continue
+        
+        date_str = check_date.isoformat()
+        
+        # Ottieni disponibilità per questo giorno
+        avail_request = AvailabilityRequest(
+            date=date_str,
+            service_id=request.service_id,
+            hairdresser_id=request.hairdresser_id
+        )
+        avail_response = await get_availability(avail_request)
+        
+        if avail_response.available_slots:
+            # Filtra slot passati se è oggi
+            available = avail_response.available_slots
+            if check_date == today:
+                now = datetime.now(timezone.utc)
+                current_time = now.strftime("%H:%M")
+                available = [s for s in available if s > current_time]
+            
+            if available:
+                return FirstAvailableResponse(
+                    found=True,
+                    date=date_str,
+                    time=available[0]
+                )
+    
+    return FirstAvailableResponse(found=False)
+
+# Endpoint per ottenere lo stato dei giorni (liberi/occupati)
+class DaysStatusRequest(BaseModel):
+    service_id: str
+    hairdresser_id: str
+    start_date: str  # YYYY-MM-DD
+    end_date: str    # YYYY-MM-DD
+
+class DayStatus(BaseModel):
+    date: str
+    status: str  # "available", "full", "closed"
+
+@api_router.post("/availability/days-status", response_model=List[DayStatus])
+async def get_days_status(request: DaysStatusRequest):
+    """Ottieni lo stato di disponibilità per un range di giorni"""
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if not settings:
+        settings = {
+            "working_days": [1, 2, 3, 4, 5, 6],
+            "time_slots": ["09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30", "18:00"]
+        }
+    
+    working_days = settings.get("working_days", [1, 2, 3, 4, 5, 6])
+    
+    start = datetime.fromisoformat(request.start_date).date()
+    end = datetime.fromisoformat(request.end_date).date()
+    
+    # Ottieni tutte le chiusure nel range
+    closures = await db.closures.find({
+        "date": {"$gte": request.start_date, "$lte": request.end_date}
+    }, {"_id": 0}).to_list(100)
+    closure_dates = set(c["date"] for c in closures)
+    
+    results = []
+    current = start
+    today = datetime.now(timezone.utc).date()
+    
+    while current <= end:
+        date_str = current.isoformat()
+        
+        # Weekday check
+        weekday = current.weekday() + 1
+        if weekday == 7:
+            weekday = 0
+        
+        if weekday not in working_days or date_str in closure_dates:
+            results.append(DayStatus(date=date_str, status="closed"))
+        elif current < today:
+            results.append(DayStatus(date=date_str, status="closed"))
+        else:
+            # Controlla disponibilità
+            avail_request = AvailabilityRequest(
+                date=date_str,
+                service_id=request.service_id,
+                hairdresser_id=request.hairdresser_id
+            )
+            avail_response = await get_availability(avail_request)
+            
+            available = avail_response.available_slots
+            # Filtra slot passati se è oggi
+            if current == today:
+                now = datetime.now(timezone.utc)
+                current_time = now.strftime("%H:%M")
+                available = [s for s in available if s > current_time]
+            
+            if available:
+                results.append(DayStatus(date=date_str, status="available"))
+            else:
+                results.append(DayStatus(date=date_str, status="full"))
+        
+        current += timedelta(days=1)
+    
+    return results
+
 # Helper function to check slot availability
 async def is_slot_available(hairdresser_id: str, service_id: str, date_time: datetime, exclude_appointment_id: str = None) -> bool:
     """Check if a time slot is available for booking"""
