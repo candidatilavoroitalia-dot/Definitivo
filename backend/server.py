@@ -237,6 +237,20 @@ class Settings(BaseModel):
     # Apertura calendario
     calendar_limit_type: str = "always"  # "always", "weeks", "months"
     calendar_limit_value: int = 0  # numero di settimane/mesi
+    # Branding e testi personalizzabili
+    salon_name: str = "parrucco.."
+    feature1_title: str = "Prenota Online"
+    feature1_desc: str = "Scegli data e ora per il tuo appuntamento"
+    feature2_title: str = "Scegli il Parrucchiere"
+    feature2_desc: str = "Prenota con il tuo parrucchiere preferito"
+    feature3_title: str = "Promemoria Automatici"
+    feature3_desc: str = "Ricevi notifiche prima del tuo appuntamento"
+    feature4_title: str = "Gestione Facile"
+    feature4_desc: str = "Modifica o cancella i tuoi appuntamenti"
+    cta_title: str = "Pronto a Trasformare il Tuo Look?"
+    cta_subtitle: str = "Registrati ora e prenota il tuo primo appuntamento"
+    app_section_title: str = "Scarica l'App sul Tuo Telefono"
+    app_section_desc: str = "Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!"
 
 class SettingsUpdate(BaseModel):
     hero_title: Optional[str] = None
@@ -250,6 +264,20 @@ class SettingsUpdate(BaseModel):
     closing_time: Optional[str] = None
     calendar_limit_type: Optional[str] = None
     calendar_limit_value: Optional[int] = None
+    # Branding e testi personalizzabili
+    salon_name: Optional[str] = None
+    feature1_title: Optional[str] = None
+    feature1_desc: Optional[str] = None
+    feature2_title: Optional[str] = None
+    feature2_desc: Optional[str] = None
+    feature3_title: Optional[str] = None
+    feature3_desc: Optional[str] = None
+    feature4_title: Optional[str] = None
+    feature4_desc: Optional[str] = None
+    cta_title: Optional[str] = None
+    cta_subtitle: Optional[str] = None
+    app_section_title: Optional[str] = None
+    app_section_desc: Optional[str] = None
 
 class AvailabilityRequest(BaseModel):
     date: str  # YYYY-MM-DD
