@@ -69,6 +69,10 @@ const BookingPage = ({ user, logout }) => {
         '17:00', '17:30', '18:00'
       ]);
       setWorkingDays(settingsRes.data.working_days || [1, 2, 3, 4, 5, 6]);
+      setCalendarLimit({
+        type: settingsRes.data.calendar_limit_type || 'always',
+        value: settingsRes.data.calendar_limit_value || 0
+      });
     } catch (error) {
       toast.error('Errore nel caricamento dei dati');
     } finally {
