@@ -435,7 +435,7 @@ const BookingPage = ({ user, logout }) => {
                       modifiersClassNames={{
                         available: 'bg-green-100 text-green-800 hover:bg-green-200',
                         full: 'bg-red-100 text-red-800 hover:bg-red-200',
-                        closed: 'bg-gray-100 text-gray-400',
+                        blocked: 'bg-gray-100 text-gray-400',
                       }}
                       locale={it}
                     />
