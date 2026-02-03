@@ -73,7 +73,7 @@ const AuthPage = ({ login }) => {
       >
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-bold font-playfair text-brand-charcoal mb-2" data-testid="auth-title">
-            parrucco..
+            {salonName || 'Caricamento...'}
           </h1>
           <p className="text-base text-muted-foreground">
             {isLogin ? 'Accedi al tuo account' : 'Crea il tuo account'}
