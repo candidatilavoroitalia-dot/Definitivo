@@ -2,12 +2,12 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { ChevronLeft, ChevronRight, Check, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, Calendar as CalendarIcon, Search, Zap } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Calendar } from '../components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { format } from 'date-fns';
+import { format, addMonths } from 'date-fns';
 import { it } from 'date-fns/locale';
 
 const BookingPage = ({ user, logout }) => {
@@ -21,6 +21,8 @@ const BookingPage = ({ user, logout }) => {
   const [loading, setLoading] = useState(true);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [searchingFirst, setSearchingFirst] = useState(false);
+  const [daysStatus, setDaysStatus] = useState({});
   
   const [selectedService, setSelectedService] = useState(null);
   const [selectedHairdresser, setSelectedHairdresser] = useState(null);
