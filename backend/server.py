@@ -661,7 +661,6 @@ async def find_first_available(request: FirstAvailableRequest):
         }
     
     working_days = settings.get("working_days", [1, 2, 3, 4, 5, 6])
-    time_slots = settings.get("time_slots", [])
     
     # Cerca nei prossimi X giorni
     today = datetime.now(timezone.utc).date()
@@ -670,7 +669,6 @@ async def find_first_available(request: FirstAvailableRequest):
         check_date = today + timedelta(days=day_offset)
         
         # Salta se non è un giorno lavorativo
-        # In Python: Monday=0, Sunday=6. Aggiungiamo 1 per allineare con JS (Monday=1)
         weekday = check_date.weekday() + 1
         if weekday == 7:
             weekday = 0  # Domenica = 0
@@ -684,20 +682,24 @@ async def find_first_available(request: FirstAvailableRequest):
         
         date_str = check_date.isoformat()
         
-        # Ottieni disponibilità per questo giorno
-        avail_request = AvailabilityRequest(
-            date=date_str,
-            service_id=request.service_id,
-            hairdresser_id=request.hairdresser_id
-        )
-        avail_response = await get_availability(avail_request)
+        # Usa la funzione helper per calcolare disponibilità
+        available_slots = await calculate_availability(date_str, request.service_id, request.hairdresser_id)
         
-        if avail_response.available_slots:
+        if available_slots:
             # Filtra slot passati se è oggi
-            available = avail_response.available_slots
             if check_date == today:
                 now = datetime.now(timezone.utc)
                 current_time = now.strftime("%H:%M")
+                available_slots = [s for s in available_slots if s > current_time]
+            
+            if available_slots:
+                return FirstAvailableResponse(
+                    found=True,
+                    date=date_str,
+                    time=available_slots[0]
+                )
+    
+    return FirstAvailableResponse(found=False)
                 available = [s for s in available if s > current_time]
             
             if available:
