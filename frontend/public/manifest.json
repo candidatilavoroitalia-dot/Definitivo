@@ -1,7 +1,7 @@
 {
-  "short_name": "Parrucco",
-  "name": "Parrucco - Prenotazioni Parrucchiere",
-  "description": "App per prenotare appuntamenti dal parrucchiere con notifiche WhatsApp",
+  "short_name": "La Barberia",
+  "name": "La Barberia - Prenotazioni",
+  "description": "App per prenotare appuntamenti dal parrucchiere",
   "icons": [
     {
       "src": "favicon.ico",
