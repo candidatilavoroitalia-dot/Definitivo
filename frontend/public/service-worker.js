@@ -1,8 +1,8 @@
-const CACHE_NAME = 'parrucco-v30';
+const CACHE_NAME = 'parrucco-v35';
 
 // Install event - force activation
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing, version: parrucco-v30');
+  console.log('Service Worker installing, version: parrucco-v35');
   self.skipWaiting(); // Force immediate activation
 });
 
