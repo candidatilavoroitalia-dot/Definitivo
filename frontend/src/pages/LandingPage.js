@@ -352,7 +352,7 @@ const LandingPage = ({ user, logout }) => {
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">✂️</span>
                       <div>
-                        <div className="font-playfair font-bold text-brand-charcoal text-sm">parrucco..</div>
+                        <div className="font-playfair font-bold text-brand-charcoal text-sm">{settings?.salon_name || ''}</div>
                         <div className="text-xs text-muted-foreground">Prenotazioni</div>
                       </div>
                     </div>
