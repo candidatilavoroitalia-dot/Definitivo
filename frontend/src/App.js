@@ -50,11 +50,33 @@ function App() {
     setLoading(false);
   }, []);
 
-  const login = (token, userData) => {
+  const login = async (token, userData) => {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    
+    // Attiva automaticamente le notifiche push
+    try {
+      if ('Notification' in window && 'serviceWorker' in navigator) {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          const registration = await navigator.serviceWorker.ready;
+          const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: process.env.REACT_APP_VAPID_PUBLIC_KEY
+          });
+          
+          // Salva la subscription nel backend
+          await axios.post('/api/push/subscribe', {
+            subscription: subscription.toJSON()
+          });
+          console.log('Notifiche push attivate automaticamente');
+        }
+      }
+    } catch (error) {
+      console.log('Errore attivazione notifiche automatiche:', error);
+    }
   };
 
   const logout = () => {
