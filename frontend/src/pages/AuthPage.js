@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -12,12 +12,25 @@ const AuthPage = ({ login }) => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [salonName, setSalonName] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
     phone: ''
   });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await axios.get('/settings');
+        setSalonName(response.data.salon_name || '');
+      } catch (error) {
+        console.error('Error fetching settings');
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
