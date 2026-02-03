@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { Save, Plus, X } from 'lucide-react';
+import { Save, Plus, X, Calendar } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
@@ -19,7 +19,9 @@ const AdminSettings = () => {
     working_days: [1, 2, 3, 4, 5, 6],
     opening_time: '09:00',
     closing_time: '19:00',
-    time_slots: []
+    time_slots: [],
+    calendar_limit_type: 'always',
+    calendar_limit_value: 0
   });
   const [newSlot, setNewSlot] = useState('');
 
