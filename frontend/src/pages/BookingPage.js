@@ -376,7 +376,7 @@ const BookingPage = ({ user, logout }) => {
             </Button>
 
             {/* Legenda colori */}
-            <div className="flex gap-4 justify-center text-sm">
+            <div className="flex flex-wrap gap-4 justify-center text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-green-200"></div>
                 <span>Disponibile</span>
@@ -387,7 +387,7 @@ const BookingPage = ({ user, logout }) => {
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 rounded bg-gray-200"></div>
-                <span>Chiuso</span>
+                <span>Chiuso/Non disponibile</span>
               </div>
             </div>
             
@@ -413,9 +413,24 @@ const BookingPage = ({ user, logout }) => {
                       disabled={isDateDisabled}
                       initialFocus
                       modifiers={{
-                        available: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'available',
-                        full: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'full',
-                        closed: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'closed',
+                        available: (date) => {
+                          const maxDate = getMaxBookingDate();
+                          if (maxDate && date > maxDate) return false;
+                          return daysStatus[format(date, 'yyyy-MM-dd')] === 'available';
+                        },
+                        full: (date) => {
+                          const maxDate = getMaxBookingDate();
+                          if (maxDate && date > maxDate) return false;
+                          return daysStatus[format(date, 'yyyy-MM-dd')] === 'full';
+                        },
+                        blocked: (date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          if (date < today) return true;
+                          const maxDate = getMaxBookingDate();
+                          if (maxDate && date > maxDate) return true;
+                          return daysStatus[format(date, 'yyyy-MM-dd')] === 'closed';
+                        },
                       }}
                       modifiersClassNames={{
                         available: 'bg-green-100 text-green-800 hover:bg-green-200',
