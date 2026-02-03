@@ -176,6 +176,20 @@ const BookingPage = ({ user, logout }) => {
 
   // Funzione per determinare il colore del giorno nel calendario
   const getDayClassName = (date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Giorni passati
+    if (date < today) {
+      return 'bg-gray-100 text-gray-400';
+    }
+    
+    // Giorni oltre il limite del calendario
+    const maxDate = getMaxBookingDate();
+    if (maxDate && date > maxDate) {
+      return 'bg-gray-100 text-gray-400';
+    }
+    
     const dateStr = format(date, 'yyyy-MM-dd');
     const status = daysStatus[dateStr];
     
