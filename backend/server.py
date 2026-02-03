@@ -1282,9 +1282,17 @@ async def get_settings():
                 "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
                 "17:00", "17:30", "18:00"
             ],
-            "admin_phone": ""
+            "admin_phone": "",
+            "calendar_limit_type": "always",
+            "calendar_limit_value": 0
         }
         return Settings(**default_settings)
+    
+    # Ensure new fields exist (for backward compatibility)
+    if "calendar_limit_type" not in settings:
+        settings["calendar_limit_type"] = "always"
+    if "calendar_limit_value" not in settings:
+        settings["calendar_limit_value"] = 0
     
     # Ensure hero_image_url exists (for backward compatibility)
     if "hero_image_url" not in settings:
