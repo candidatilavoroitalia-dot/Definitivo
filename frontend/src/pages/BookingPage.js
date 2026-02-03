@@ -86,7 +86,7 @@ const BookingPage = ({ user, logout }) => {
     
     try {
       const today = new Date();
-      const endDate = addMonths(today, 6); // 6 mesi avanti
+      const endDate = addMonths(today, 12); // 1 anno avanti
       
       const response = await axios.post('/availability/days-status', {
         service_id: selectedService.id,
