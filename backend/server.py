@@ -564,6 +564,81 @@ async def check_availability(request: AvailabilityRequest):
     
     return AvailabilityResponse(date=request.date, available_slots=available_slots)
 
+# Helper function per calcolare disponibilità (usata da più endpoint)
+async def calculate_availability(date_str: str, service_id: str, hairdresser_id: str) -> List[str]:
+    """Calcola gli slot disponibili per una data specifica"""
+    # Check if date is a closure day
+    closure = await db.closures.find_one({"date": date_str}, {"_id": 0})
+    if closure:
+        return []
+    
+    # Get settings for time slots
+    settings = await db.settings.find_one({"id": "app_settings"}, {"_id": 0})
+    if not settings:
+        time_slots = [
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "14:00", "14:30", "15:00", "15:30", "16:00", "16:30",
+            "17:00", "17:30", "18:00"
+        ]
+    else:
+        time_slots = settings.get("time_slots", [])
+    
+    # Get service to know duration
+    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    if not service:
+        return []
+    
+    service_duration = service["duration_minutes"]
+    
+    # Get all appointments for this date and hairdresser
+    start_date = datetime.fromisoformat(date_str).replace(hour=0, minute=0, second=0, microsecond=0, tzinfo=timezone.utc)
+    end_date = start_date + timedelta(days=1)
+    
+    appointments = await db.appointments.find({
+        "hairdresser_id": hairdresser_id,
+        "date_time": {
+            "$gte": start_date.isoformat(),
+            "$lt": end_date.isoformat()
+        },
+        "status": {"$ne": "cancelled"}
+    }, {"_id": 0}).to_list(1000)
+    
+    # Batch fetch all services
+    service_ids = list(set(apt["service_id"] for apt in appointments))
+    services_dict = {}
+    if service_ids:
+        services_list = await db.services.find({"id": {"$in": service_ids}}, {"_id": 0}).to_list(100)
+        services_dict = {s["id"]: s for s in services_list}
+    
+    # Build occupied time ranges
+    occupied_ranges = []
+    for apt in appointments:
+        apt_time = datetime.fromisoformat(apt["date_time"])
+        apt_service = services_dict.get(apt["service_id"])
+        apt_duration = apt_service["duration_minutes"] if apt_service else 30
+        
+        start_time = apt_time
+        end_time = apt_time + timedelta(minutes=apt_duration)
+        occupied_ranges.append((start_time, end_time))
+    
+    # Check which slots are available
+    available_slots = []
+    for slot in time_slots:
+        hours, minutes = map(int, slot.split(':'))
+        slot_datetime = start_date.replace(hour=hours, minute=minutes)
+        slot_end = slot_datetime + timedelta(minutes=service_duration)
+        
+        is_available = True
+        for occ_start, occ_end in occupied_ranges:
+            if slot_datetime < occ_end and slot_end > occ_start:
+                is_available = False
+                break
+        
+        if is_available:
+            available_slots.append(slot)
+    
+    return available_slots
+
 # Endpoint per trovare il primo appuntamento libero
 class FirstAvailableRequest(BaseModel):
     service_id: str
