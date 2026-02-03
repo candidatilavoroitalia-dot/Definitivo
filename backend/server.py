@@ -620,6 +620,10 @@ async def is_slot_available(hairdresser_id: str, service_id: str, date_time: dat
     return True
 
 # Appointments routes
+@api_router.options("/appointments")
+async def appointments_options():
+    return {"message": "OK"}
+
 @api_router.post("/appointments", response_model=Appointment)
 async def create_appointment(appointment_data: AppointmentCreate, current_user: dict = Depends(get_current_user)):
     # Check if user is approved
