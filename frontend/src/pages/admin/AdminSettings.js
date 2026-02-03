@@ -314,12 +314,17 @@ const AdminSettings = () => {
                   type="number"
                   min="1"
                   max={formData.calendar_limit_type === 'weeks' ? 52 : 12}
-                  value={formData.calendar_limit_value}
-                  onChange={(e) => setFormData({ ...formData, calendar_limit_value: parseInt(e.target.value) || 1 })}
+                  value={formData.calendar_limit_value || ''}
+                  onChange={(e) => setFormData({ ...formData, calendar_limit_value: e.target.value === '' ? '' : parseInt(e.target.value) })}
+                  onBlur={(e) => {
+                    if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                      setFormData({ ...formData, calendar_limit_value: 1 });
+                    }
+                  }}
                   className="w-24"
                 />
                 <span className="text-sm text-muted-foreground">
-                  I clienti potranno prenotare fino a {formData.calendar_limit_value} {formData.calendar_limit_type === 'weeks' ? 'settimane' : 'mesi'} in anticipo
+                  I clienti potranno prenotare fino a {formData.calendar_limit_value || 1} {formData.calendar_limit_type === 'weeks' ? 'settimane' : 'mesi'} in anticipo
                 </span>
               </div>
             )}
