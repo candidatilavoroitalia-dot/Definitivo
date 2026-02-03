@@ -1,10 +1,6 @@
 const CACHE_NAME = 'parrucco-v30';
-const urlsToCache = [
-  '/',
-  '/manifest.json'
-];
 
-// Install event - cache assets and force activation
+// Install event - force activation
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing, version: parrucco-v30');
   self.skipWaiting(); // Force immediate activation
@@ -17,11 +13,9 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          // Delete ALL caches except current
-          if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
-            return caches.delete(cacheName);
-          }
+          // Delete ALL caches
+          console.log('Deleting cache:', cacheName);
+          return caches.delete(cacheName);
         })
       );
     }).then(() => {
@@ -30,7 +24,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Push notification event - HANDLE INCOMING NOTIFICATIONS
+// Push notification event
 self.addEventListener('push', (event) => {
   console.log('Push notification received:', event);
   
@@ -81,13 +75,11 @@ self.addEventListener('notificationclick', (event) => {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true })
       .then((clientList) => {
-        // If app is already open, focus it
         for (const client of clientList) {
           if (client.url.includes(self.location.origin) && 'focus' in client) {
             return client.focus();
           }
         }
-        // Otherwise open new window
         if (clients.openWindow) {
           return clients.openWindow(event.notification.data.url || '/dashboard');
         }
@@ -95,30 +87,8 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch event - NO CACHING, always fetch from network
+// Fetch event - NO CACHING
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests
-  if (!event.request.url.startsWith(self.location.origin)) {
-    return;
-  }
-
-  // Always fetch from network - no caching
+  // Always fetch from network, no caching
   return;
-});
-              return response;
-            }
-
-            // Clone response
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
-      })
-  );
 });
