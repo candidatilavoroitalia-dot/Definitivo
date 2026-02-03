@@ -266,6 +266,129 @@ const AdminSettings = () => {
           </div>
         </Card>
 
+        {/* Branding e Testi Personalizzabili */}
+        <Card className="p-8 border-brand-sand/30">
+          <div className="flex items-center gap-3 mb-6">
+            <Type className="w-6 h-6 text-brand-gold" />
+            <h3 className="text-2xl font-playfair font-semibold text-brand-charcoal">Nome Salone e Testi</h3>
+          </div>
+          
+          <div className="space-y-6">
+            {/* Nome Salone */}
+            <div>
+              <Label className="text-lg font-semibold">Nome del Salone</Label>
+              <Input
+                value={formData.salon_name}
+                onChange={(e) => setFormData({ ...formData, salon_name: e.target.value })}
+                className="mt-2"
+                placeholder="es. Il Tuo Salone"
+              />
+            </div>
+
+            {/* Features */}
+            <div className="border-t pt-6">
+              <h4 className="font-semibold mb-4">Sezione "Perché Scegliere Noi"</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                  <Label>Titolo Feature 1</Label>
+                  <Input
+                    value={formData.feature1_title}
+                    onChange={(e) => setFormData({ ...formData, feature1_title: e.target.value })}
+                  />
+                  <Label>Descrizione</Label>
+                  <Input
+                    value={formData.feature1_desc}
+                    onChange={(e) => setFormData({ ...formData, feature1_desc: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                  <Label>Titolo Feature 2</Label>
+                  <Input
+                    value={formData.feature2_title}
+                    onChange={(e) => setFormData({ ...formData, feature2_title: e.target.value })}
+                  />
+                  <Label>Descrizione</Label>
+                  <Input
+                    value={formData.feature2_desc}
+                    onChange={(e) => setFormData({ ...formData, feature2_desc: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                  <Label>Titolo Feature 3</Label>
+                  <Input
+                    value={formData.feature3_title}
+                    onChange={(e) => setFormData({ ...formData, feature3_title: e.target.value })}
+                  />
+                  <Label>Descrizione</Label>
+                  <Input
+                    value={formData.feature3_desc}
+                    onChange={(e) => setFormData({ ...formData, feature3_desc: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2 p-4 bg-gray-50 rounded-lg">
+                  <Label>Titolo Feature 4</Label>
+                  <Input
+                    value={formData.feature4_title}
+                    onChange={(e) => setFormData({ ...formData, feature4_title: e.target.value })}
+                  />
+                  <Label>Descrizione</Label>
+                  <Input
+                    value={formData.feature4_desc}
+                    onChange={(e) => setFormData({ ...formData, feature4_desc: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="border-t pt-6">
+              <h4 className="font-semibold mb-4">Sezione Call to Action</h4>
+              <div className="space-y-4">
+                <div>
+                  <Label>Titolo CTA</Label>
+                  <Input
+                    value={formData.cta_title}
+                    onChange={(e) => setFormData({ ...formData, cta_title: e.target.value })}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label>Sottotitolo CTA</Label>
+                  <Input
+                    value={formData.cta_subtitle}
+                    onChange={(e) => setFormData({ ...formData, cta_subtitle: e.target.value })}
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* App Section */}
+            <div className="border-t pt-6">
+              <h4 className="font-semibold mb-4">Sezione Download App</h4>
+              <div className="space-y-4">
+                <div>
+                  <Label>Titolo Sezione App</Label>
+                  <Input
+                    value={formData.app_section_title}
+                    onChange={(e) => setFormData({ ...formData, app_section_title: e.target.value })}
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label>Descrizione Sezione App</Label>
+                  <Textarea
+                    value={formData.app_section_desc}
+                    onChange={(e) => setFormData({ ...formData, app_section_desc: e.target.value })}
+                    className="mt-2"
+                    rows={2}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+
         {/* Calendar Booking Limit */}
         <Card className="p-8 border-brand-sand/30">
           <div className="flex items-center gap-3 mb-6">
