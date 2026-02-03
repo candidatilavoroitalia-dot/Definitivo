@@ -1160,6 +1160,11 @@ async def update_appointment(appointment_id: str, update_data: AppointmentUpdate
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     
+    # If status is being set to cancelled, delete the appointment instead
+    if update_data.status == "cancelled":
+        await db.appointments.delete_one({"id": appointment_id})
+        return {"message": "Appuntamento eliminato"}
+    
     update_dict = {}
     if update_data.date_time:
         # Ensure date_time is timezone-aware
