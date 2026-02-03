@@ -21,7 +21,20 @@ const AdminSettings = () => {
     closing_time: '19:00',
     time_slots: [],
     calendar_limit_type: 'always',
-    calendar_limit_value: 0
+    calendar_limit_value: 0,
+    salon_name: 'parrucco..',
+    feature1_title: 'Prenota Online',
+    feature1_desc: 'Scegli data e ora per il tuo appuntamento',
+    feature2_title: 'Scegli il Parrucchiere',
+    feature2_desc: 'Prenota con il tuo parrucchiere preferito',
+    feature3_title: 'Promemoria Automatici',
+    feature3_desc: 'Ricevi notifiche prima del tuo appuntamento',
+    feature4_title: 'Gestione Facile',
+    feature4_desc: 'Modifica o cancella i tuoi appuntamenti',
+    cta_title: 'Pronto a Trasformare il Tuo Look?',
+    cta_subtitle: 'Registrati ora e prenota il tuo primo appuntamento',
+    app_section_title: "Scarica l'App sul Tuo Telefono",
+    app_section_desc: 'Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!'
   });
   const [newSlot, setNewSlot] = useState('');
 
