@@ -766,12 +766,6 @@ async def get_days_status(request: DaysStatusRequest):
         current_date += timedelta(days=1)
     
     return results
-            else:
-                results.append(DayStatus(date=date_str, status="full"))
-        
-        current += timedelta(days=1)
-    
-    return results
 
 # Helper function to check slot availability
 async def is_slot_available(hairdresser_id: str, service_id: str, date_time: datetime, exclude_appointment_id: str = None) -> bool:
