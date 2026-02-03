@@ -37,23 +37,23 @@ const LandingPage = ({ user, logout }) => {
   const features = [
     {
       icon: Calendar,
-      title: 'Prenota Online',
-      description: 'Scegli data e ora per il tuo appuntamento'
+      title: settings?.feature1_title || 'Prenota Online',
+      description: settings?.feature1_desc || 'Scegli data e ora per il tuo appuntamento'
     },
     {
       icon: Users,
-      title: 'Scegli il Parrucchiere',
-      description: 'Prenota con il tuo parrucchiere preferito'
+      title: settings?.feature2_title || 'Scegli il Parrucchiere',
+      description: settings?.feature2_desc || 'Prenota con il tuo parrucchiere preferito'
     },
     {
       icon: Clock,
-      title: 'Promemoria Automatici',
-      description: 'Ricevi notifiche prima del tuo appuntamento'
+      title: settings?.feature3_title || 'Promemoria Automatici',
+      description: settings?.feature3_desc || 'Ricevi notifiche prima del tuo appuntamento'
     },
     {
       icon: Check,
-      title: 'Gestione Facile',
-      description: 'Modifica o cancella i tuoi appuntamenti'
+      title: settings?.feature4_title || 'Gestione Facile',
+      description: settings?.feature4_desc || 'Modifica o cancella i tuoi appuntamenti'
     }
   ];
 
