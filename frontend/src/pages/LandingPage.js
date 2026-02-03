@@ -296,10 +296,10 @@ const LandingPage = ({ user, logout }) => {
                   <Smartphone className="w-12 h-12 text-brand-gold" />
                 </div>
                 <h2 className="text-4xl md:text-5xl font-semibold tracking-tight font-playfair text-brand-charcoal">
-                  Scarica l'App sul Tuo Telefono
+                  {settings?.app_section_title || "Scarica l'App sul Tuo Telefono"}
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
-                  Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!
+                  {settings?.app_section_desc || 'Installa parrucco.. sul tuo dispositivo per un accesso ancora più rapido. Funziona anche offline!'}
                 </p>
                 <ul className="space-y-3 text-muted-foreground">
                   <li className="flex items-center gap-3">
