@@ -37,7 +37,7 @@ const AuthPage = ({ login }) => {
         : formData;
 
       const response = await axios.post(endpoint, payload);
-      login(response.data.access_token, response.data.user);
+      await login(response.data.access_token, response.data.user);
       
       if (response.data.user.is_admin) {
         navigate('/admin');
