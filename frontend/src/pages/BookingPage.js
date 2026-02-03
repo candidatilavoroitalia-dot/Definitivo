@@ -23,6 +23,7 @@ const BookingPage = ({ user, logout }) => {
   const [submitting, setSubmitting] = useState(false);
   const [searchingFirst, setSearchingFirst] = useState(false);
   const [daysStatus, setDaysStatus] = useState({});
+  const [calendarLimit, setCalendarLimit] = useState({ type: 'always', value: 0 });
   
   const [selectedService, setSelectedService] = useState(null);
   const [selectedHairdresser, setSelectedHairdresser] = useState(null);
@@ -39,6 +40,19 @@ const BookingPage = ({ user, logout }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDate, selectedService, selectedHairdresser]);
+
+  // Calcola la data massima prenotabile
+  const getMaxBookingDate = () => {
+    if (calendarLimit.type === 'always') return null;
+    
+    const today = new Date();
+    if (calendarLimit.type === 'weeks') {
+      return addWeeks(today, calendarLimit.value);
+    } else if (calendarLimit.type === 'months') {
+      return addMonths(today, calendarLimit.value);
+    }
+    return null;
+  };
 
   const fetchData = async () => {
     try {
