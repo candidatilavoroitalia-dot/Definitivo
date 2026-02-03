@@ -327,6 +327,33 @@ const BookingPage = ({ user, logout }) => {
               Scegli Data e Ora
             </h2>
             
+            {/* Pulsante Trova Primo Disponibile */}
+            <Button
+              onClick={findFirstAvailable}
+              disabled={searchingFirst}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-6 text-lg"
+              data-testid="find-first-available"
+            >
+              <Zap className="w-5 h-5 mr-2" />
+              {searchingFirst ? 'Ricerca in corso...' : 'Trova Primo Appuntamento Libero'}
+            </Button>
+
+            {/* Legenda colori */}
+            <div className="flex gap-4 justify-center text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-green-200"></div>
+                <span>Disponibile</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-red-200"></div>
+                <span>Pieno</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded bg-gray-200"></div>
+                <span>Chiuso</span>
+              </div>
+            </div>
+            
             <Card className="p-5 border-brand-sand/30">
               <div className="mb-6">
                 <label className="text-sm font-medium uppercase mb-3 block">Data</label>
@@ -348,6 +375,16 @@ const BookingPage = ({ user, logout }) => {
                       onSelect={setSelectedDate}
                       disabled={isDateDisabled}
                       initialFocus
+                      modifiers={{
+                        available: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'available',
+                        full: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'full',
+                        closed: (date) => daysStatus[format(date, 'yyyy-MM-dd')] === 'closed',
+                      }}
+                      modifiersClassNames={{
+                        available: 'bg-green-100 text-green-800 hover:bg-green-200',
+                        full: 'bg-red-100 text-red-800 hover:bg-red-200',
+                        closed: 'bg-gray-100 text-gray-400',
+                      }}
                       locale={it}
                     />
                   </PopoverContent>
