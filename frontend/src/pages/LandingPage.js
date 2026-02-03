@@ -264,10 +264,10 @@ const LandingPage = ({ user, logout }) => {
             className="max-w-4xl mx-auto text-center space-y-8"
           >
             <h2 className="text-4xl md:text-5xl font-semibold tracking-tight font-playfair">
-              Pronto a Trasformare il Tuo Look?
+              {settings?.cta_title || 'Pronto a Trasformare il Tuo Look?'}
             </h2>
             <p className="text-lg leading-relaxed text-gray-300">
-              Registrati ora e prenota il tuo primo appuntamento
+              {settings?.cta_subtitle || 'Registrati ora e prenota il tuo primo appuntamento'}
             </p>
             <Button
               onClick={() => navigate('/auth')}
