@@ -67,7 +67,7 @@ const LandingPage = ({ user, logout }) => {
             animate={{ opacity: 1, x: 0 }}
             className="text-2xl font-playfair font-bold text-brand-charcoal"
           >
-            parrucco..
+            {settings?.salon_name || 'parrucco..'}
           </motion.div>
           <div className="flex gap-4 items-center">
             {!isInstalled && (
