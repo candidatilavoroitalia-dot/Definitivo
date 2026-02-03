@@ -970,7 +970,7 @@ async def get_my_appointments(current_user: dict = Depends(get_current_user)):
     
     return appointments
 
-@api_router.patch("/appointments/{appointment_id}/cancel", response_model=Appointment)
+@api_router.patch("/appointments/{appointment_id}/cancel")
 async def cancel_appointment(appointment_id: str, current_user: dict = Depends(get_current_user)):
     appointment = await db.appointments.find_one({"id": appointment_id}, {"_id": 0})
     if not appointment:
@@ -979,16 +979,10 @@ async def cancel_appointment(appointment_id: str, current_user: dict = Depends(g
     if appointment["user_id"] != current_user["sub"]:
         raise HTTPException(status_code=403, detail="Not authorized")
     
-    await db.appointments.update_one(
-        {"id": appointment_id},
-        {"$set": {"status": "cancelled"}}
-    )
+    # Delete the appointment immediately instead of marking as cancelled
+    await db.appointments.delete_one({"id": appointment_id})
     
-    appointment["status"] = "cancelled"
-    appointment["date_time"] = datetime.fromisoformat(appointment["date_time"])
-    appointment["created_at"] = datetime.fromisoformat(appointment["created_at"])
-    
-    return Appointment(**appointment)
+    return {"message": "Appuntamento cancellato con successo"}
 
 @api_router.patch("/appointments/{appointment_id}/reschedule", response_model=Appointment)
 async def reschedule_appointment(appointment_id: str, new_date_time: datetime, current_user: dict = Depends(get_current_user)):
