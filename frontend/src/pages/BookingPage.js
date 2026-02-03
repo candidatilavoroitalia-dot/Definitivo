@@ -165,6 +165,11 @@ const BookingPage = ({ user, logout }) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return true;
+    
+    // Controlla il limite del calendario
+    const maxDate = getMaxBookingDate();
+    if (maxDate && date > maxDate) return true;
+    
     const dayOfWeek = date.getDay();
     return !workingDays.includes(dayOfWeek);
   };
